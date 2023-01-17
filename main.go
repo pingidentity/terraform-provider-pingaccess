@@ -2,9 +2,7 @@ package main
 
 import (
 	"context"
-
 	"terraform-provider-pingaccess/internal/provider"
-
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 )
 
