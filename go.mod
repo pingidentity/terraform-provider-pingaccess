@@ -2,10 +2,7 @@ module terraform-provider-pingaccess
 
 go 1.18
 
-require (
-	github.com/hashicorp/terraform-plugin-framework v1.1.1
-	github.com/pingidentity/pingaccess-go-client v0.0.0
-)
+require github.com/hashicorp/terraform-plugin-framework v1.1.1
 
 require (
 	github.com/fatih/color v1.13.0 // indirect
@@ -25,7 +22,6 @@ require (
 	github.com/vmihailenco/msgpack/v4 v4.3.12 // indirect
 	github.com/vmihailenco/tagparser v0.1.1 // indirect
 	golang.org/x/net v0.0.0-20220722155237-a158d28d115b // indirect
-	golang.org/x/oauth2 v0.0.0-20210323180902-22b0adad7558 // indirect
 	golang.org/x/sys v0.0.0-20220722155257-8c9f86f7a55f // indirect
 	golang.org/x/text v0.4.0 // indirect
 	google.golang.org/appengine v1.6.6 // indirect

@@ -5,13 +5,14 @@ import (
 	"os"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	"github.com/hashicorp/terraform-plugin-framework/diag"
+	// "github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
+	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
+	// "github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	client "github.com/pingidentity/pingaccess-go-client"
+	// client "github.com/pingidentity/pingaccess-go-client"
 )
 
 // Ensure the implementation satisfies the expected interfacesß
@@ -40,25 +41,24 @@ func (p *pingaccessProvider) Metadata(_ context.Context, _ provider.MetadataRequ
 }
 
 // GetSchema defines the provider-level schema for configuration data.
-func (p *pingaccessProvider) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
-	return tfsdk.Schema{
-		Attributes: map[string]tfsdk.Attribute{
-			"host": {
-				Type:     types.StringType,
-				Optional: true,
-			},
-			"username": {
-				Type:     types.StringType,
-				Optional: true,
-			},
-			"password": {
-				Type:      types.StringType,
-				Optional:  true,
-				Sensitive: true,
-			},
-		},
-	}, nil
+// Schema defines the provider-level schema for configuration data.
+func (p *pingaccessProvider) Schema(_ context.Context, _ provider.SchemaRequest, resp *provider.SchemaResponse) {
+    resp.Schema = schema.Schema{
+        Attributes: map[string]schema.Attribute{
+            "host": schema.StringAttribute{
+                Optional: true,
+            },
+            "username": schema.StringAttribute{
+                Optional: true,
+            },
+            "password": schema.StringAttribute{
+                Optional:  true,
+                Sensitive: true,
+            },
+        },
+    }
 }
+
 
 func (p *pingaccessProvider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
 	// Retrieve provider data from configuration
@@ -184,5 +184,7 @@ func (p *pingaccessProvider) DataSources(_ context.Context) []func() datasource.
 
 // Resources defines the resources implemented in the provider.
 func (p *pingaccessProvider) Resources(_ context.Context) []func() resource.Resource {
-	return nil
+	return []func() resource.Resource{
+		NewEnginelistenerResource,
+	}
 }
