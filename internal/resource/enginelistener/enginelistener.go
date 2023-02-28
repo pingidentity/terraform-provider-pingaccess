@@ -3,11 +3,14 @@ package enginelistener
 
 import (
     "context"
+    "strconv"
+    "time"
 
-    "github.com/hashicorp/terraform-plugin-framework/diag"
-    "github.com/hashicorp/terraform-plugin-framework/tfsdk"
+    "github.com/hashicorp-demoapp/hashicups-client-go"
     "github.com/hashicorp/terraform-plugin-framework/resource"
     "github.com/hashicorp/terraform-plugin-framework/resource/schema"
+    "github.com/hashicorp/terraform-plugin-framework/types"
+
 )
 
 // Ensure the implementation satisfies the expected interfaces.
@@ -24,13 +27,14 @@ func NewEnginelistenerResource() resource.Resource {
 // orderResource is the resource implementation.
 type enginelistenerResource struct{
     apiClient      *client.APIClient
-    Items       []orderItemModel `tfsdk:"items"`
+    Items       []enginelistenerModel `tfsdk:"items"`
 }
 type enginelistenerItemModel struct {
     ID          types.Int64   `tfsdk:"id"`
     Name        types.String  `tfsdk:"name"`
     Port        types.String  `tfsdk:"port"`
     Secure      types.String  `tfsdk:"secure"`
+    TrustedCertificateGroupId types.Int64 `tfsdk:"trustedCertificateGroupId`
 }
 // Metadata returns the resource type name.
 func (r *enginelistenerResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -85,7 +89,9 @@ func (r *enginelistenerResource) Schema(_ context.Context, _ resource.SchemaRequ
                         "secure": schema.StringAttribute{
                             Computed: true,
                         },
-
+                        "trustedCertificateGroupId": schema.Int64Attribute{
+                            Computed: true
+                        },
                     },
                 },
             },
@@ -96,7 +102,7 @@ func (r *enginelistenerResource) Schema(_ context.Context, _ resource.SchemaRequ
 // Create a new resource
 func (r *enginelistenerResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
     // Retrieve values from plan
-    var plan orderResourceModel
+    var plan enginelistenerResourceModel
     diags := req.Plan.Get(ctx, &plan)
     resp.Diagnostics.Append(diags...)
     if resp.Diagnostics.HasError() {
@@ -104,42 +110,38 @@ func (r *enginelistenerResource) Create(ctx context.Context, req resource.Create
     }
 
     // Generate API request body from plan
-    var items []hashicups.OrderItem
+    var items []client.Enginelistener
     for _, item := range plan.Items {
-        items = append(items, hashicups.OrderItem{
-            Coffee: hashicups.Coffee{
-                ID: int(item.Coffee.ID.ValueInt64()),
-            },
-            Quantity: int(item.Quantity.ValueInt64()),
+        items = append(items, client.EnginelistenerItem{
+            ID: int(item.ID.ValueInt64()),
+            Name: string(item.Name.ValueString()),
+            Port: int(item.Port.ValueString()),
+            Secure: string(item.Secure.ValueString()),
+            TrustedCertificateGroupId: int(item.TrustedCertificateGroupId.ValueInt64()),
         })
     }
 
     // Create new order
-    order, err := r.client.CreateOrder(items)
+    createlistener, err := r.apiclient.CreateOrder(items)
     if err != nil {
         resp.Diagnostics.AddError(
-            "Error creating order",
+            "Error while creating the listener",
             "Could not create order, unexpected error: "+err.Error(),
         )
         return
     }
 
     // Map response body to schema and populate Computed attribute values
-    plan.ID = types.StringValue(strconv.Itoa(order.ID))
-    for orderItemIndex, orderItem := range order.Items {
-        plan.Items[orderItemIndex] = orderItemModel{
-            Coffee: orderItemCoffeeModel{
-                ID:          types.Int64Value(int64(orderItem.Coffee.ID)),
-                Name:        types.StringValue(orderItem.Coffee.Name),
-                Teaser:      types.StringValue(orderItem.Coffee.Teaser),
-                Description: types.StringValue(orderItem.Coffee.Description),
-                Price:       types.Float64Value(orderItem.Coffee.Price),
-                Image:       types.StringValue(orderItem.Coffee.Image),
-            },
-            Quantity: types.Int64Value(int64(orderItem.Quantity)),
+    for EnginelistenerItemIndex, EnginelistenerItem := range createlistener.Items {
+        plan.Items[EnginelistenerItemIndex] = enginelistenerModel{
+                id:                         types.Int64Value(EnginelistenerItem.ID),
+                name:                       types.StringValue(orderItemEnginelistenerItem.Name),
+                port:                       types.StringValue(orderItemEnginelistenerItem.Port),
+                secure:                     types.StringValue(orderItemEnginelistenerItem.Secure),
+                trustedCertificateGroupId:  types.Int64Value(EnginelistenerItem.TrustedCertificateGroupId),
         }
     }
-    plan.LastUpdated = types.StringValue(time.Now().Format(time.RFC850))
+  
 
     // Set state to fully populated data
     diags = resp.State.Set(ctx, plan)
@@ -148,3 +150,44 @@ func (r *enginelistenerResource) Create(ctx context.Context, req resource.Create
         return
     }
 }
+
+// Read resource information
+func (r *enginelistenerResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+    // Get current state
+        var state enginelistenerResourceModel
+        diags := req.State.Get(ctx, &state)
+        resp.Diagnostics.Append(diags...)
+        if resp.Diagnostics.HasError() {
+            return
+        }
+    
+        // Get refreshed order value from HashiCups
+        readlistener, err := r.apiclient.GetOrder(state.ID.ValueString())
+        if err != nil {
+            resp.Diagnostics.AddError(
+                "Error Reading EngineListener Order",
+                "Could not read EngineListener order ID's "+state.ID.ValueString()+": "+err.Error(),
+            )
+            return
+        }
+    
+        // Overwrite items with refreshed state
+        state.Items = []enginelistenerModel {}
+        for _, item := range readlistener.Items {
+            state.Items = append(state.Items, enginelistenerModel{
+                id:                         types.Int64Value(EnginelistenerItem.ID),
+                name:                       types.StringValue(orderItemEnginelistenerItem.Name),
+                port:                       types.StringValue(orderItemEnginelistenerItem.Port),
+                secure:                     types.StringValue(orderItemEnginelistenerItem.Secure),
+                trustedCertificateGroupId:  types.Int64Value(EnginelistenerItem.TrustedCertificateGroupId),
+            })
+        }
+    
+        // Set refreshed state
+        diags = resp.State.Set(ctx, &state)
+        resp.Diagnostics.Append(diags...)
+        if resp.Diagnostics.HasError() {
+            return
+        }
+    }
+    
