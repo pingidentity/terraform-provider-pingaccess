@@ -28,6 +28,7 @@ func NewEnginelistenerResource() resource.Resource {
 type enginelistenerResource struct{
     apiClient      *client.APIClient
     Items       []enginelistenerModel `tfsdk:"items"`
+    LastUpdated types.String     `tfsdk:"last_updated"`
 }
 type enginelistenerItemModel struct {
     ID          types.Int64   `tfsdk:"id"`
@@ -91,6 +92,9 @@ func (r *enginelistenerResource) Schema(_ context.Context, _ resource.SchemaRequ
                         },
                         "trustedCertificateGroupId": schema.Int64Attribute{
                             Computed: true
+                        },
+                        "last_updated": schema.StringAttribute{
+                            Computed: true,
                         },
                     },
                 },
@@ -182,11 +186,92 @@ func (r *enginelistenerResource) Read(ctx context.Context, req resource.ReadRequ
                 trustedCertificateGroupId:  types.Int64Value(EnginelistenerItem.TrustedCertificateGroupId),
             })
         }
-    
+        plan.LastUpdated = types.StringValue(time.Now().Format(time.RFC850))
         // Set refreshed state
         diags = resp.State.Set(ctx, &state)
         resp.Diagnostics.Append(diags...)
         if resp.Diagnostics.HasError() {
+            return
+        }
+    }
+    
+func (r *enginelistenerResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+    // Retrieve values from plan
+    var plan enginelistenerResource
+    diags := req.Plan.Get(ctx, &plan)
+    resp.Diagnostics.Append(diags...)
+    if resp.Diagnostics.HasError() {
+        return
+    }
+
+    // Generate API request body from plan
+    var listenerItems []client.Enginelistener
+    for _, item := range plan.Items {
+        listenerItems = append(listenerItems, lient.Enginelistener{
+            id:                         types.Int64Value(EnginelistenerItem.ID),
+            name:                       types.StringValue(orderItemEnginelistenerItem.Name),
+            port:                       types.StringValue(orderItemEnginelistenerItem.Port),
+            secure:                     types.StringValue(orderItemEnginelistenerItem.Secure),
+            trustedCertificateGroupId:  types.Int64Value(EnginelistenerItem.TrustedCertificateGroupId),
+        })
+    }
+
+    // Update existing order
+    _, err := r.apiclient.UpdateOrder(plan.ID.ValueString(), listenerItems)
+    if err != nil {
+        resp.Diagnostics.AddError(
+            "Error Updating enginelistener",
+            "Could not update enginelistener, unexpected error: "+err.Error(),
+        )
+        return
+    }
+
+    // Fetch updated items from GetOrder as UpdateOrder items are not
+    // populated.
+    updatelistener, err := r.apiclient.GetOrder(plan.ID.ValueString())
+    if err != nil {
+        resp.Diagnostics.AddError(
+            "Error Reading enginelistener",
+            "Could not read enginelistener ID "+plan.ID.ValueString()+": "+err.Error(),
+        )
+        return
+    }
+
+    // Update resource state with updated items and timestamp
+    plan.Items = []enginelistenerModel{}
+    for _, item := range updatelistener.Items {
+        plan.Items = append(plan.Items, enginelistenerModel{
+            id:                         types.Int64Value(EnginelistenerItem.ID),
+            name:                       types.StringValue(orderItemEnginelistenerItem.Name),
+            port:                       types.StringValue(orderItemEnginelistenerItem.Port),
+            secure:                     types.StringValue(orderItemEnginelistenerItem.Secure),
+            trustedCertificateGroupId:  types.Int64Value(EnginelistenerItem.TrustedCertificateGroupId),
+        })
+    }
+    plan.LastUpdated = types.StringValue(time.Now().Format(time.RFC850))
+
+    diags = resp.State.Set(ctx, plan)
+    resp.Diagnostics.Append(diags...)
+    if resp.Diagnostics.HasError() {
+        return
+    }
+}
+func (r *enginelistenerResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+    // Retrieve values from state
+        var enginelistenerResourceModel
+        diags := req.State.Get(ctx, &state)
+        resp.Diagnostics.Append(diags...)
+        if resp.Diagnostics.HasError() {
+            return
+        }
+    
+        // Delete existing order
+        err := r.apiclient.DeleteOrder(state.ID.ValueString())
+        if err != nil {
+            resp.Diagnostics.AddError(
+                "Error Deleting enginelistener",
+                "Could not delete enginelistener, unexpected error: "+err.Error(),
+            )
             return
         }
     }
