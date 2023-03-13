@@ -3,16 +3,17 @@ package provider
 import (
 	"context"
 	"os"
-
+	internaltypes "terraform-provider-pingaccess/internal/types"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	// "github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
-	// "github.com/hashicorp/terraform-plugin-framework/tfsdk"
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	// client "github.com/pingidentity/pingaccess-go-client"
+	client "github.com/pingidentity/pingaccess-go-client"
+	"terraform-provider-pingaccess/internal/resource/enginelistener"
 )
 
 // Ensure the implementation satisfies the expected interfacesß
@@ -159,22 +160,22 @@ func (p *pingaccessProvider) Configure(ctx context.Context, req provider.Configu
 		return
 	}
 
-	// Create a new PingAccess client using the configuration values
-	// client, err := provider.NewClient(&host, &username, &password)
-	// if err != nil {
-	// 	resp.Diagnostics.AddError(
-	// 		"Unable to Create PingAccess API Client",
-	// 		"An unexpected error occurred when creating the PingAccess API client. "+
-	// 			"If the error is not clear, please contact the provider developers.\n\n"+
-	// 			"PingAccess Client Error: "+err.Error(),
-	// 	)
-	// 	return
-	// }
+	Create a new PingAccess client using the configuration values
+	client, err := provider.NewClient(&host, &username, &password)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Unable to Create PingAccess API Client",
+			"An unexpected error occurred when creating the PingAccess API client. "+
+				"If the error is not clear, please contact the provider developers.\n\n"+
+				"PingAccess Client Error: "+err.Error(),
+		)
+		return
+	}
 
 	// Make the PingAccess client available during DataSource and Resource
-	// type Configure methods.
-// 	resp.DataSourceData = client
-// 	resp.ResourceData = client
+	type Configure methods.
+	resp.DataSourceData = client
+	resp.ResourceData = client
  }
 
 // DataSources defines the data sources implemented in the provider.
