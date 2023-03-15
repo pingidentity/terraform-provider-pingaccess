@@ -13,9 +13,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	client "github.com/pingidentity/pingaccess-go-client"
-	"terraform-provider-pingaccess/internal/resource/enginelistener"
+	// "terraform-provider-pingaccess/internal/resource/enginelistener"
 )
-
 // Ensure the implementation satisfies the expected interfacesß
 var (
 	_ provider.Provider = &pingaccessProvider{}
@@ -160,7 +159,7 @@ func (p *pingaccessProvider) Configure(ctx context.Context, req provider.Configu
 		return
 	}
 
-	Create a new PingAccess client using the configuration values
+	// Create a new PingAccess client using the configuration values
 	client, err := provider.NewClient(&host, &username, &password)
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -173,7 +172,7 @@ func (p *pingaccessProvider) Configure(ctx context.Context, req provider.Configu
 	}
 
 	// Make the PingAccess client available during DataSource and Resource
-	type Configure methods.
+	// type Configure methods.
 	resp.DataSourceData = client
 	resp.ResourceData = client
  }

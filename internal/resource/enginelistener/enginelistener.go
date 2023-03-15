@@ -9,14 +9,12 @@ import (
     client "github.com/pingidentity/pingaccess-go-client"
     internaltypes "terraform-provider-pingaccess/internal/types"
     "github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	// "github.com/hashicorp/terraform-plugin-framework/diag"
-	// "github.com/hashicorp/terraform-plugin-framework/path"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
-	// "github.com/hashicorp/terraform-plugin-framework/tfsdk"
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	// "github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	// "github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 
 )
 
@@ -36,7 +34,7 @@ type enginelistenerResource struct{
     providerConfig internaltypes.ProviderConfiguration
     apiClient      *client.APIClient
     Items       []enginelistenerItemModel `tfsdk:"items"`
-    LastUpdated types.String     `tfsdk:"last_updated"`
+   
 }
 type enginelistenerItemModel struct {
     ID          types.Int64   `tfsdk:"id"`
@@ -44,6 +42,7 @@ type enginelistenerItemModel struct {
     Port        types.Int64  `tfsdk:"port"`
     Secure      types.String  `tfsdk:"secure"`
     TrustedCertificateGroupId types.Int64 `tfsdk:"trustedCertificateGroupId`
+    LastUpdated types.String     `tfsdk:"last_updated"`
 }
 // Metadata returns the resource type name.
 func (r *enginelistenerResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -135,18 +134,17 @@ func (r *enginelistenerResource) Create(ctx context.Context, req resource.Create
 		ReportHttpError(ctx, &resp.Diagnostics, "An error occurred while creating the engine listener", err, httpResp)
         return
     }
+    responseJson, err := listenerResponse.MarshalJSON()
+	if err == nil {
+		tflog.Debug(ctx, "Add response: "+string(responseJson))
+	}
+    // Read the response into the state
+	var state enginelistenerItemModel
+	readEngineListenerResponse(ctx, listenerResponse, &state, &plan)
+
+	// Populate Computed attribute values
+	state.LastUpdated = types.StringValue(string(time.Now().Format(time.RFC850)))
 }
-    // responseJson, err := listenerResponse.MarshalJSON()
-	// if err == nil {
-	// 	tflog.Debug(ctx, "Add response: "+string(responseJson))
-	// }
-    // // Read the response into the state
-	// var state enginelistenerItemModel
-	// readEngineListenerResponse(ctx, listenerResponse, &state, &plan)
-
-	// // Populate Computed attribute values
-	// state.LastUpdated = types.StringValue(string(time.Now().Format(time.RFC850)))
-
 
     // // Map response body to schema and populate Computed attribute values
     // for EnginelistenerItemIndex, EnginelistenerItem := range createlistener.Items {
