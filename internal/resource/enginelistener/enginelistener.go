@@ -9,12 +9,13 @@ import (
     client "github.com/pingidentity/pingaccess-go-client"
     internaltypes "terraform-provider-pingaccess/internal/types"
     "github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/diag"
-	"github.com/hashicorp/terraform-plugin-framework/path"
+	// "github.com/hashicorp/terraform-plugin-framework/diag"
+	// "github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
+	// "github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+    "terraform-provider-pingaccess/internal/resource"
 
 )
 
@@ -127,7 +128,7 @@ func (r *enginelistenerResource) Create(ctx context.Context, req resource.Create
     if err == nil {
             tflog.Debug(ctx, "Add request: "+string(requestJson))
         }
-    apiCreateListener := r.apiClient.DefaultApi.EngineListenersPost(ProviderBasicAuthContext(ctx, r.providerConfig))
+    apiCreateListener := r.apiClient.DefaultApi.EngineListenersPost(config.ProviderBasicAuthContext(ctx, r.providerConfig))
     apiCreateListener := apiCreateListener.EngineListenersPost(*createlistener)
     listenerResponse, httpResp, err := r.apiClient.DefaultApi.EngineListenersPostExecute(apiCreateListener)
 	if err != nil {
