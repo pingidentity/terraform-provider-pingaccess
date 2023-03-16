@@ -40,7 +40,7 @@ type enginelistenerResource struct{
 type enginelistenerItemModel struct {
     ID          types.Int64   `tfsdk:"id"`
     Name        types.String  `tfsdk:"name"`
-    Port        types.Int64  `tfsdk:"port"`
+    Port        types.Int64 `tfsdk:"port"`
     Secure      types.String  `tfsdk:"secure"`
     TrustedCertificateGroupId types.Int64 `tfsdk:"trustedCertificateGroupId`
     LastUpdated types.String     `tfsdk:"last_updated"`
@@ -107,7 +107,7 @@ func (r *enginelistenerResource) Schema(_ context.Context, _ resource.SchemaRequ
 // Create a new resource
 func (r *enginelistenerResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
     // Retrieve values from plan
-    var plan enginelistenerResource
+    var plan enginelistenerItemModel
     diags := req.Plan.Get(ctx, &plan)
     resp.Diagnostics.Append(diags...)
     if resp.Diagnostics.HasError() {
@@ -115,21 +115,21 @@ func (r *enginelistenerResource) Create(ctx context.Context, req resource.Create
     }
 
     // Generate API request body from plan
-    var items []client.EngineListener
-    for _, item := range plan.Items {
-        items = append(items, client.EngineListener{
-            Name:   string(item.Name.ValueString()),
+    // var items []client.EngineListener
+    // for _, item := range plan.Items {
+    //     items = append(items, client.EngineListener{
+    //         Name:   string(item.Name.ValueString()),
 
-        })
-    }
+    //     })
+    // }
     // // Create new order
-    createlistener := client.NewEngineListeners(items)
+    createlistener := client.NewEngineListener(plan.Name.ValueString())
     requestJson, err := createlistener.MarshalJSON()
     if err == nil {
             tflog.Debug(ctx, "Add request: "+string(requestJson))
         }
     apiCreateListener := r.apiClient.DefaultApi.EngineListenersPost(config.ProviderBasicAuthContext(ctx, r.providerConfig))
-    apiCreateListener := apiCreateListener.EngineListenersPost(*createlistener)
+    apiCreateListener = apiCreateListener.EngineListener(*createlistener)
     listenerResponse, httpResp, err := r.apiClient.DefaultApi.EngineListenersPostExecute(apiCreateListener)
 	if err != nil {
 		ReportHttpError(ctx, &resp.Diagnostics, "An error occurred while creating the engine listener", err, httpResp)
