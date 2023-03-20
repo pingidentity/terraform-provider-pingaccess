@@ -123,7 +123,7 @@ func (r *enginelistenerResource) Create(ctx context.Context, req resource.Create
     //     })
     // }
     // // Create new order
-    createlistener := client.NewEngineListener(plan.Name.ValueString())
+    createlistener := client.NewEngineListener(plan.Name.ValueString(), int32(plan.Port.ValueInt64()))
     requestJson, err := createlistener.MarshalJSON()
     if err == nil {
             tflog.Debug(ctx, "Add request: "+string(requestJson))
