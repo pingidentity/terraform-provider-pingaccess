@@ -6,13 +6,13 @@ import (
 	"io"
 	"net/http"
 
+	internaltypes "terraform-provider-pingaccess/internal/types"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	client "github.com/pingidentity/pingaccess-go-client"
-	internaltypes "terraform-provider-pingaccess/internal/types"
-
 )
 
 // Get BasicAuth context with a username and password
@@ -43,7 +43,7 @@ func ReportHttpError(ctx context.Context, diagnostics *diag.Diagnostics, errorSu
 		body, internalError := io.ReadAll(httpResp.Body)
 		if internalError == nil {
 			tflog.Debug(ctx, "Error HTTP response body: "+string(body))
-			var paError pingAccessError 
+			var paError pingAccessError
 			internalError = json.Unmarshal(body, &paError)
 			if internalError == nil {
 				diagnostics.AddError(errorSummary, err.Error()+" - Detail: "+paError.Detail)
@@ -60,36 +60,32 @@ func ReportHttpError(ctx context.Context, diagnostics *diag.Diagnostics, errorSu
 }
 
 // Write out messages from the Config API response to tflog
-func logMessages(ctx context.Context, messages *client.*httpResp) {
+func logMessages(ctx context.Context, messages *client.APIResponse) {
 	if messages == nil {
 		return
 	}
 
-	for _, message := range messages.Notifications {
-		tflog.Warn(ctx, "Configuration API Notification: "+message)
-	}
+	// for _, message := range messages.Message {
+	tflog.Warn(ctx, "Configuration API Notification: "+messages.Message)
+	// }
 
-	for _, action := range messages.RequiredActions {
-		actionJson, err := action.MarshalJSON()
-		if err != nil {
-			tflog.Warn(ctx, "Configuration API RequiredAction: "+string(actionJson))
-		}
-	}
+	// for _, action := range messages.RequiredActions {
+	// 	actionJson, err := action.MarshalJSON()
+	// 	if err != nil {
+	// 		tflog.Warn(ctx, "Configuration API RequiredAction: "+string(actionJson))
+	// 	}
+	// }
 }
 
 // // Read messages from the Configuration API response
-// func ReadMessages(ctx context.Context, messages *client.NewAPIResponse) (types.Set, types.Set) {
-// 	// Report any notifications from the Config API
-// 	var notifications types.Set
-// 	var requiredActions types.Set
-// 	if messages != nil {
-// 		notifications = internaltypes.GetStringSet(messages.Notifications)
-// 		requiredActions, _ = GetRequiredActionsSet(*messages)
-// 		logMessages(ctx, messages)
-// 	} else {
-// 		notifications, _ = types.SetValue(types.StringType, []attr.Value{})
-// 		requiredActions, _ = types.SetValue(GetRequiredActionsObjectType(), []attr.Value{})
-// 	}
-// 	return notifications, requiredActions
-// }
-
+func ReadMessages(ctx context.Context, messages *client.APIResponse) (types.Set, types.Set) {
+	// Report any notifications from the Config API
+	var Message types.Set
+	if messages != nil {
+		Message = internaltypes.GetStringSet(messages.Message)
+		logMessages(ctx, messages)
+	} else {
+		Message, _ = types.SetValue(types.StringType, []attr.Value{})
+	}
+	return Message
+}
