@@ -78,7 +78,7 @@ func logMessages(ctx context.Context, messages *client.APIResponse) {
 }
 
 // // Read messages from the Configuration API response
-func ReadMessages(ctx context.Context, messages *client.APIResponse) (types.Set, types.Set) {
+func ReadMessages(ctx context.Context, messages *client.APIResponse) types.Set {
 	// Report any notifications from the Config API
 	var Message types.Set
 	if messages != nil {
