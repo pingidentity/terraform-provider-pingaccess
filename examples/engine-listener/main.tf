@@ -6,7 +6,7 @@ terraform {
   }
 }
 
-provider "pingdirectory" {
+provider "pingaccess" {
   username = "administrator"
   password = "2FederateM0re"
   https_host = "https://localhost:9999"
