@@ -1,6 +1,6 @@
 terraform {
   required_providers {
-    pingdirectory = {
+    pingaccess = {
       source = "pingidentity/pingaccess"
     }
   }
