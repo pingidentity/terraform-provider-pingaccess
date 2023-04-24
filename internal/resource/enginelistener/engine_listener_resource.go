@@ -3,8 +3,8 @@ package engineListener
 import (
 	"context"
 
-	config "terraform-provider-pingaccess/internal/resource"
-	internaltypes "terraform-provider-pingaccess/internal/types"
+	config "github.com/pingidentity/terraform-provider-pingaccess/internal/resource"
+	internaltypes "github.com/pingidentity/terraform-provider-pingaccess/internal/types"
 
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"

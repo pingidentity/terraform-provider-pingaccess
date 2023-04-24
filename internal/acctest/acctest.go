@@ -10,8 +10,9 @@ import (
 	"strings"
 	"testing"
 
-	config "terraform-provider-pingaccess/internal/resource"
-	"terraform-provider-pingaccess/internal/types"
+	"github.com/pingidentity/terraform-provider-pingaccess/internal/types"
+
+	config "github.com/pingidentity/terraform-provider-pingaccess/internal/resource"
 
 	client "github.com/pingidentity/pingaccess-go-client"
 )

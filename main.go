@@ -4,7 +4,8 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"terraform-provider-pingaccess/internal/provider"
+
+	"github.com/pingidentity/terraform-provider-pingaccess/internal/provider"
 
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 )

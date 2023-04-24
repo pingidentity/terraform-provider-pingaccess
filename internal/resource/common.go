@@ -1,7 +1,7 @@
 package config
 
 import (
-	internaltypes "terraform-provider-pingaccess/internal/types"
+	internaltypes "github.com/pingidentity/terraform-provider-pingaccess/internal/types"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"

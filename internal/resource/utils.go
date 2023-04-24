@@ -6,7 +6,7 @@ import (
 	"io"
 	"net/http"
 
-	internaltypes "terraform-provider-pingaccess/internal/types"
+	internaltypes "github.com/pingidentity/terraform-provider-pingaccess/internal/types"
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-log/tflog"

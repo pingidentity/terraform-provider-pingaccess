@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"os"
 
-	accessTokenValidator "terraform-provider-pingaccess/internal/resource/accesstokenvalidator"
-	engineListener "terraform-provider-pingaccess/internal/resource/enginelistener"
-	internaltypes "terraform-provider-pingaccess/internal/types"
+	accessTokenValidator "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/accesstokenvalidator"
+	engineListener "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/enginelistener"
+	internaltypes "github.com/pingidentity/terraform-provider-pingaccess/internal/types"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
