@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"os"
 
+	accessTokenValidator "terraform-provider-pingaccess/internal/resource/accesstokenvalidator"
+	engineListener "terraform-provider-pingaccess/internal/resource/enginelistener"
 	internaltypes "terraform-provider-pingaccess/internal/types"
-
-	"terraform-provider-pingaccess/internal/resource/enginelistener"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
@@ -154,7 +154,12 @@ func (p *pingaccessProvider) Configure(ctx context.Context, req provider.Configu
 	}
 	resourceConfig.ProviderConfig = providerConfig
 	clientConfig := client.NewConfiguration()
-	clientConfig.Servers = client.ServerConfigurations{}
+	clientConfig.DefaultHeader["X-Xsrf-Header"] = "PingAccess"
+	clientConfig.Servers = client.ServerConfigurations{
+		{
+			URL: httpsHost + "/pa-admin-api/v3",
+		},
+	}
 	// TODO THIS IS NOT SAFE!! Eventually need to add way to trust a specific cert/signer here rather than just trusting everything
 	// https://stackoverflow.com/questions/12122159/how-to-do-a-https-request-with-bad-certificate
 	tr := &http.Transport{
@@ -176,6 +181,7 @@ func (p *pingaccessProvider) DataSources(_ context.Context) []func() datasource.
 // Resources defines the resources implemented in the provider.
 func (p *pingaccessProvider) Resources(_ context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
-		enginelistener.NewEnginelistenerResource,
+		engineListener.EngineListenerResource,
+		accessTokenValidator.AccessTokenValidatorResource,
 	}
 }
