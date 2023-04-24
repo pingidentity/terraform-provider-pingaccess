@@ -8,9 +8,7 @@ import (
 
 	internaltypes "terraform-provider-pingaccess/internal/types"
 
-	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	client "github.com/pingidentity/pingaccess-go-client"
 )
@@ -57,35 +55,4 @@ func ReportHttpError(ctx context.Context, diagnostics *diag.Diagnostics, errorSu
 		}
 		diagnostics.AddError(errorSummary, err.Error())
 	}
-}
-
-// Write out messages from the Config API response to tflog
-func logMessages(ctx context.Context, messages *client.APIResponse) {
-	if messages == nil {
-		return
-	}
-
-	// for _, message := range messages.Message {
-	tflog.Warn(ctx, "Configuration API Notification: "+messages.Message)
-	// }
-
-	// for _, action := range messages.RequiredActions {
-	// 	actionJson, err := action.MarshalJSON()
-	// 	if err != nil {
-	// 		tflog.Warn(ctx, "Configuration API RequiredAction: "+string(actionJson))
-	// 	}
-	// }
-}
-
-// // Read messages from the Configuration API response
-func ReadMessages(ctx context.Context, messages *client.APIResponse) types.Set {
-	// Report any notifications from the Config API
-	var Message types.Set
-	if messages != nil {
-		Message = internaltypes.GetStringSet(messages.Message)
-		logMessages(ctx, messages)
-	} else {
-		Message, _ = types.SetValue(types.StringType, []attr.Value{})
-	}
-	return Message
 }
