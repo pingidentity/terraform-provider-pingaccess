@@ -46,7 +46,7 @@ func ReportHttpError(ctx context.Context, diagnostics *diag.Diagnostics, errorSu
 			var paError pingAccessError
 			internalError = json.Unmarshal(body, &paError)
 			if internalError == nil {
-				diagnostics.AddError(errorSummary, err.Error()+" - Detail: "+paError.Detail)
+				diagnostics.AddError(errorSummary, err.Error()+" - Detail: "+string(body))
 				httpErrorPrinted = true
 			}
 		}
