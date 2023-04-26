@@ -17,6 +17,16 @@ func StringToTF(v string) basetypes.StringValue {
 	}
 }
 
+func StringToInt64Pointer(value basetypes.StringValue) *int64 {
+	valueToString := value.ValueString()
+	newVal, _ := strconv.ParseInt(valueToString, 10, 64)
+	return &newVal
+}
+
+func Int64PointerToString(value int64) string {
+	return strconv.FormatInt(value, 10)
+}
+
 func Int64ToString(value types.Int64) string {
 	return strconv.FormatInt(value.ValueInt64(), 10)
 }
