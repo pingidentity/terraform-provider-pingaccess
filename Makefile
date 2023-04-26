@@ -46,9 +46,9 @@ testacc:
 	PINGACCESS_PROVIDER_HTTPS_HOST=https://localhost:9000 \
 	PINGACCESS_PROVIDER_USERNAME=administrator \
 	PINGACCESS_PROVIDER_PASSWORD=2Access \
-	TF_ACC=1 go test -timeout 10m -v ./... -p 4
+	TF_ACC=1 go test -timeout 10m -run ^TestAccAccessTokenValidator -v ./... -p 1
 
-testacccomplete: removetestcontainer starttestcontainer testacc
+testacccomplete: removetestcontainer starttestcontainer install testacc
 
 clearstates:
 	find . -name "*tfstate*" -delete

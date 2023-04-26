@@ -11,7 +11,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
@@ -39,17 +38,9 @@ type accessTokenValidatorResource struct {
 	apiClient      *client.APIClient
 }
 
-type accessTokenValidatorConfigModel struct {
-	Description          types.String `tfsdk:"description"`
-	Audience             types.String `tfsdk:"audience"`
-	Issuer               types.String `tfsdk:"issuer"`
-	Path                 types.String `tfsdk:"path"`
-	SubjectAttributeName types.String `tfsdk:"subject_attribute_name"`
-}
-
 type accessTokenValidatorResourceModel struct {
 	ClassName     types.String `tfsdk:"classname"`
-	Id            types.Int64  `tfsdk:"id"`
+	Id            types.String `tfsdk:"id"`
 	Name          types.String `tfsdk:"name"`
 	Configuration types.Object `tfsdk:"configuration"`
 }
@@ -61,13 +52,13 @@ func (r *accessTokenValidatorResource) Schema(ctx context.Context, req resource.
 
 func accessTokenValidatorResourceSchema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse, setOptionalToComputed bool) {
 	schema := schema.Schema{
-		Description: "Manages Access token Validator.",
+		Description: "Manages Access Token Validator.",
 		Attributes: map[string]schema.Attribute{
-			"id": schema.Int64Attribute{
+			"id": schema.StringAttribute{
 				Computed: true,
 				Optional: true,
-				PlanModifiers: []planmodifier.Int64{
-					int64planmodifier.UseStateForUnknown(),
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"name": schema.StringAttribute{
@@ -130,8 +121,7 @@ func accessTokenValidatorResourceSchema(ctx context.Context, req resource.Schema
 func addOptionalAccessTokenValidatorFields(ctx context.Context, addRequest *client.AccessTokenValidator, plan accessTokenValidatorResourceModel) diag.Diagnostics {
 	// Empty strings are treated as equivalent to null
 	if internaltypes.IsDefined(plan.Id) {
-		intVal := plan.Id.ValueInt64()
-		addRequest.Id = &intVal
+		addRequest.Id = internaltypes.StringToInt64Pointer(plan.Id)
 	}
 	if internaltypes.IsNonEmptyObj(plan.Configuration) {
 		addRequest.Configuration = internaltypes.ObjValuesToClientMap(plan.Configuration)
@@ -151,28 +141,27 @@ func (r *accessTokenValidatorResource) Configure(_ context.Context, req resource
 	providerCfg := req.ProviderData.(internaltypes.ResourceConfiguration)
 	r.providerConfig = providerCfg.ProviderConfig
 	r.apiClient = providerCfg.ApiClient
-
 }
 
 func readAccessTokenValidatorResponse(ctx context.Context, r *client.AccessTokenValidator, state *accessTokenValidatorResourceModel, expectedValues *accessTokenValidatorResourceModel, diagnostics *diag.Diagnostics) {
-	state.Id = types.Int64Value(*r.Id)
+	state.Id = types.StringValue(internaltypes.Int64PointerToString(*r.Id))
 	state.Name = types.StringValue(r.Name)
 	state.ClassName = types.StringValue(r.ClassName)
 	attrTypes := map[string]attr.Type{
+		"audience":               basetypes.StringType{},
+		"description":            basetypes.StringType{},
 		"issuer":                 basetypes.StringType{},
 		"path":                   basetypes.StringType{},
-		"audience":               basetypes.StringType{},
 		"subject_attribute_name": basetypes.StringType{},
-		"description":            basetypes.StringType{},
 	}
 
 	configValues := r.GetConfiguration()
 	attrValues := map[string]attr.Value{
+		"audience":               internaltypes.StringValueOrNull(configValues["audience"]),
 		"description":            internaltypes.StringValueOrNull(configValues["description"]),
+		"issuer":                 internaltypes.StringValueOrNull(configValues["issuer"]),
 		"path":                   internaltypes.StringValueOrNull(configValues["path"]),
 		"subject_attribute_name": internaltypes.StringValueOrNull(configValues["subjectAttributeName"]),
-		"issuer":                 internaltypes.StringValueOrNull(configValues["issuer"]),
-		"audience":               internaltypes.StringValueOrNull(configValues["audience"]),
 	}
 	configuration := internaltypes.MaptoObjValue(attrTypes, attrValues, *diagnostics)
 	state.Configuration = configuration
@@ -227,8 +216,8 @@ func readAccessTokenValidator(ctx context.Context, req resource.ReadRequest, res
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	apiReadAccessTokenValidator, httpResp, err := apiClient.AccessTokenValidatorsApi.GetAccessTokenValidator(config.ProviderBasicAuthContext(ctx, providerConfig), internaltypes.Int64ToString(state.Id)).Execute()
 
+	apiReadAccessTokenValidator, httpResp, err := apiClient.AccessTokenValidatorsApi.GetAccessTokenValidator(config.ProviderBasicAuthContext(ctx, providerConfig), state.Id.ValueString()).Execute()
 	if err != nil {
 		config.ReportHttpError(ctx, &resp.Diagnostics, "An error occurred while looking for an Access Token Validator", err, httpResp)
 		return
@@ -268,7 +257,7 @@ func updateAccessTokenValidator(ctx context.Context, req resource.UpdateRequest,
 	// Get the current state to see how any attributes are changing
 	var state accessTokenValidatorResourceModel
 	req.State.Get(ctx, &state)
-	UpdateAccessTokenValidator := apiClient.AccessTokenValidatorsApi.UpdateAccessTokenValidator(config.ProviderBasicAuthContext(ctx, providerConfig), internaltypes.Int64ToString(plan.Id))
+	UpdateAccessTokenValidator := apiClient.AccessTokenValidatorsApi.UpdateAccessTokenValidator(config.ProviderBasicAuthContext(ctx, providerConfig), plan.Id.ValueString())
 	CreateUpdateRequest := client.NewAccessTokenValidator(plan.ClassName.ValueString(), plan.Name.ValueString())
 	addOptionalAccessTokenValidatorFields(ctx, CreateUpdateRequest, plan)
 	requestJson, err := CreateUpdateRequest.MarshalJSON()
@@ -310,7 +299,7 @@ func deleteAccessTokenValidator(ctx context.Context, req resource.DeleteRequest,
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	httpResp, err := apiClient.AccessTokenValidatorsApi.DeleteAccessTokenValidator(config.ProviderBasicAuthContext(ctx, providerConfig), internaltypes.Int64ToString(state.Id)).Execute()
+	httpResp, err := apiClient.AccessTokenValidatorsApi.DeleteAccessTokenValidator(config.ProviderBasicAuthContext(ctx, providerConfig), state.Id.ValueString()).Execute()
 	if err != nil {
 		config.ReportHttpError(ctx, &resp.Diagnostics, "An error occurred while deleting Access Token Validator", err, httpResp)
 		return
@@ -321,6 +310,5 @@ func (r *accessTokenValidatorResource) ImportState(ctx context.Context, req reso
 	importLocation(ctx, req, resp)
 }
 func importLocation(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	// Retrieve import ID and save to id attribute
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }

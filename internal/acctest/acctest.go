@@ -41,9 +41,10 @@ func ConfigurationPreCheck(t *testing.T) {
 func TestClient() *client.APIClient {
 	httpsHost := os.Getenv("PINGACCESS_PROVIDER_HTTPS_HOST")
 	clientConfig := client.NewConfiguration()
+	clientConfig.DefaultHeader["X-Xsrf-Header"] = "PingAccess"
 	clientConfig.Servers = client.ServerConfigurations{
 		{
-			URL: httpsHost + "/config",
+			URL: httpsHost + "/pa-admin-api/v3",
 		},
 	}
 	// Trusting all for the acceptance tests, since they run on localhost
