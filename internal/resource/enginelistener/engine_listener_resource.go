@@ -12,6 +12,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	client "github.com/pingidentity/pingaccess-go-client"
@@ -36,7 +37,7 @@ type engineListenerResource struct {
 }
 
 type engineListenerResourceModel struct {
-	Id                        types.Int64  `tfsdk:"id"`
+	Id                        types.String `tfsdk:"id"`
 	Name                      types.String `tfsdk:"name"`
 	Port                      types.Int64  `tfsdk:"port"`
 	Secure                    types.Bool   `tfsdk:"secure"`
@@ -52,11 +53,11 @@ func enginelistenerResourceSchema(ctx context.Context, req resource.SchemaReques
 	schema := schema.Schema{
 		Description: "Manages an Engine Listener.",
 		Attributes: map[string]schema.Attribute{
-			"id": schema.Int64Attribute{
+			"id": schema.StringAttribute{
 				Computed: true,
 				Optional: true,
-				PlanModifiers: []planmodifier.Int64{
-					int64planmodifier.UseStateForUnknown(),
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"name": schema.StringAttribute{
@@ -90,8 +91,7 @@ func enginelistenerResourceSchema(ctx context.Context, req resource.SchemaReques
 func addOptionalEngineListenerFields(ctx context.Context, addRequest *client.EngineListener, plan engineListenerResourceModel) error {
 	// Empty strings are treated as equivalent to null
 	if internaltypes.IsDefined(plan.Id) {
-		intVal := plan.Id.ValueInt64()
-		addRequest.Id = &intVal
+		addRequest.Id = internaltypes.StringToInt64Pointer(plan.Id)
 	}
 	if internaltypes.IsDefined(plan.Secure) {
 		boolVal := plan.Secure.ValueBool()
@@ -121,7 +121,7 @@ func (r *engineListenerResource) Configure(_ context.Context, req resource.Confi
 }
 
 func readEngineListenerResponse(ctx context.Context, r *client.EngineListener, state *engineListenerResourceModel, expectedValues *engineListenerResourceModel) {
-	state.Id = types.Int64Value(*r.Id)
+	state.Id = types.StringValue(internaltypes.Int64PointerToString(*r.Id))
 	state.Name = types.StringValue(r.Name)
 	state.Port = types.Int64Value(int64(r.Port))
 	state.Secure = internaltypes.BoolTypeOrNil(r.Secure)
@@ -180,7 +180,7 @@ func readEngineListener(ctx context.Context, req resource.ReadRequest, resp *res
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	apiReadListener, httpResp, err := apiClient.EngineListenersApi.GetEngineListener(config.ProviderBasicAuthContext(ctx, providerConfig), internaltypes.Int64ToString(state.Id)).Execute()
+	apiReadListener, httpResp, err := apiClient.EngineListenersApi.GetEngineListener(config.ProviderBasicAuthContext(ctx, providerConfig), state.Id.ValueString()).Execute()
 
 	if err != nil {
 		config.ReportHttpError(ctx, &resp.Diagnostics, "An error occurred while looking for an engine listener", err, httpResp)
@@ -221,7 +221,7 @@ func updateEngineListener(ctx context.Context, req resource.UpdateRequest, resp 
 	// Get the current state to see how any attributes are changing
 	var state engineListenerResourceModel
 	req.State.Get(ctx, &state)
-	UpdateListener := apiClient.EngineListenersApi.UpdateEngineListener(config.ProviderBasicAuthContext(ctx, providerConfig), internaltypes.Int64ToString(plan.Id))
+	UpdateListener := apiClient.EngineListenersApi.UpdateEngineListener(config.ProviderBasicAuthContext(ctx, providerConfig), (plan.Id.ValueString()))
 	CreateUpdateRequest := client.NewEngineListener(plan.Name.ValueString(), plan.Port.ValueInt64())
 	addOptionalEngineListenerFields(ctx, CreateUpdateRequest, plan)
 	requestJson, err := CreateUpdateRequest.MarshalJSON()
@@ -263,7 +263,7 @@ func deleteEngineListener(ctx context.Context, req resource.DeleteRequest, resp 
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	httpResp, err := apiClient.EngineListenersApi.DeleteEngineListener(config.ProviderBasicAuthContext(ctx, providerConfig), internaltypes.Int64ToString(state.Id)).Execute()
+	httpResp, err := apiClient.EngineListenersApi.DeleteEngineListener(config.ProviderBasicAuthContext(ctx, providerConfig), state.Id.ValueString()).Execute()
 	if err != nil {
 		config.ReportHttpError(ctx, &resp.Diagnostics, "An error occurred while deleting an engine listener", err, httpResp)
 		return
