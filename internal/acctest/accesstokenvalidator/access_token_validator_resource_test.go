@@ -14,7 +14,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-const TF_ACC = 1
 const Id = "3"
 const className = "com.pingidentity.pa.accesstokenvalidators.JwksEndpoint"
 
@@ -90,7 +89,7 @@ resource "pingaccess_access_token_validator" "%[1]s" {
 	)
 }
 
-// Test that the expected attributes are set on the PingDirectory server
+// Test that the expected attributes are set on the PingAccess server
 func testAccCheckExpectedAccessTokenValidatorAttributes(config accessTokenValidatorResourceModel) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		resourceType := "Access Token Validator"
