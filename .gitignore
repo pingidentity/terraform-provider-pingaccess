@@ -36,4 +36,4 @@ terraform
 *.vscode*
 
 *.DS_Store*
-scripts/**
+scripts/*
