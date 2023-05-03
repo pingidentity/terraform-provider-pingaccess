@@ -10,11 +10,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/pingidentity/terraform-provider-pingaccess/internal/types"
-
-	config "github.com/pingidentity/terraform-provider-pingaccess/internal/resource"
-
 	client "github.com/pingidentity/pingaccess-go-client"
+	config "github.com/pingidentity/terraform-provider-pingaccess/internal/resource"
+	"github.com/pingidentity/terraform-provider-pingaccess/internal/types"
 )
 
 // Verify that any required environment variables are set before the test begins

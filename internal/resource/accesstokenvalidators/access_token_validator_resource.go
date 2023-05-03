@@ -3,9 +3,6 @@ package accessTokenValidators
 import (
 	"context"
 
-	config "github.com/pingidentity/terraform-provider-pingaccess/internal/resource"
-	internaltypes "github.com/pingidentity/terraform-provider-pingaccess/internal/types"
-
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -18,6 +15,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	client "github.com/pingidentity/pingaccess-go-client"
+	config "github.com/pingidentity/terraform-provider-pingaccess/internal/resource"
+	internaltypes "github.com/pingidentity/terraform-provider-pingaccess/internal/types"
 )
 
 // Ensure the implementation satisfies the expected interfaces.
@@ -118,7 +117,7 @@ func accessTokenValidatorResourceSchema(ctx context.Context, req resource.Schema
 	resp.Schema = schema
 }
 
-func addOptionalAccessTokenValidatorFields(ctx context.Context, addRequest *client.AccessTokenValidator, plan accessTokenValidatorResourceModel) diag.Diagnostics {
+func addOptionalAccessTokenValidatorFields(ctx context.Context, addRequest *client.AccessTokenValidator, plan accessTokenValidatorResourceModel) error {
 	// Empty strings are treated as equivalent to null
 	if internaltypes.IsDefined(plan.Id) {
 		addRequest.Id = internaltypes.StringToInt64Pointer(plan.Id)
@@ -176,7 +175,11 @@ func (r *accessTokenValidatorResource) Create(ctx context.Context, req resource.
 		return
 	}
 	createAccessTokenValidator := client.NewAccessTokenValidator(plan.ClassName.ValueString(), plan.Name.ValueString())
-	addOptionalAccessTokenValidatorFields(ctx, createAccessTokenValidator, plan)
+	err := addOptionalAccessTokenValidatorFields(ctx, createAccessTokenValidator, plan)
+	if err != nil {
+		resp.Diagnostics.AddError("Failed to add optional properties to add request for Access Token Validator", err.Error())
+		return
+	}
 	requestJson, err := createAccessTokenValidator.MarshalJSON()
 	if err == nil {
 		tflog.Debug(ctx, "Add request: "+string(requestJson))
@@ -259,7 +262,11 @@ func updateAccessTokenValidator(ctx context.Context, req resource.UpdateRequest,
 	req.State.Get(ctx, &state)
 	UpdateAccessTokenValidator := apiClient.AccessTokenValidatorsApi.UpdateAccessTokenValidator(config.ProviderBasicAuthContext(ctx, providerConfig), plan.Id.ValueString())
 	CreateUpdateRequest := client.NewAccessTokenValidator(plan.ClassName.ValueString(), plan.Name.ValueString())
-	addOptionalAccessTokenValidatorFields(ctx, CreateUpdateRequest, plan)
+	err := addOptionalAccessTokenValidatorFields(ctx, CreateUpdateRequest, plan)
+	if err != nil {
+		resp.Diagnostics.AddError("Failed to add optional properties to update request for Access Token Validator", err.Error())
+		return
+	}
 	requestJson, err := CreateUpdateRequest.MarshalJSON()
 	if err == nil {
 		tflog.Debug(ctx, "Update request: "+string(requestJson))
@@ -267,7 +274,7 @@ func updateAccessTokenValidator(ctx context.Context, req resource.UpdateRequest,
 	UpdateAccessTokenValidator = UpdateAccessTokenValidator.AccessTokenValidator(*CreateUpdateRequest)
 	UpdateAccessTokenValidatorResponse, httpResp, err := apiClient.AccessTokenValidatorsApi.UpdateAccessTokenValidatorExecute(UpdateAccessTokenValidator)
 	if err != nil {
-		config.ReportHttpError(ctx, &resp.Diagnostics, "An error occurred while updating engine listener", err, httpResp)
+		config.ReportHttpError(ctx, &resp.Diagnostics, "An error occurred while updating Access Token Validator", err, httpResp)
 		return
 	}
 	// Log response JSON

@@ -3,9 +3,6 @@ package engineListener
 import (
 	"context"
 
-	config "github.com/pingidentity/terraform-provider-pingaccess/internal/resource"
-	internaltypes "github.com/pingidentity/terraform-provider-pingaccess/internal/types"
-
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -16,6 +13,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	client "github.com/pingidentity/pingaccess-go-client"
+	config "github.com/pingidentity/terraform-provider-pingaccess/internal/resource"
+	internaltypes "github.com/pingidentity/terraform-provider-pingaccess/internal/types"
 )
 
 // Ensure the implementation satisfies the expected interfaces.
@@ -138,7 +137,11 @@ func (r *engineListenerResource) Create(ctx context.Context, req resource.Create
 	}
 
 	createListener := client.NewEngineListener(plan.Name.ValueString(), plan.Port.ValueInt64())
-	addOptionalEngineListenerFields(ctx, createListener, plan)
+	err := addOptionalEngineListenerFields(ctx, createListener, plan)
+	if err != nil {
+		resp.Diagnostics.AddError("Failed to add optional properties to add request for Engine Listener", err.Error())
+		return
+	}
 	requestJson, err := createListener.MarshalJSON()
 	if err == nil {
 		tflog.Debug(ctx, "Add request: "+string(requestJson))
@@ -223,7 +226,11 @@ func updateEngineListener(ctx context.Context, req resource.UpdateRequest, resp 
 	req.State.Get(ctx, &state)
 	UpdateListener := apiClient.EngineListenersApi.UpdateEngineListener(config.ProviderBasicAuthContext(ctx, providerConfig), (plan.Id.ValueString()))
 	CreateUpdateRequest := client.NewEngineListener(plan.Name.ValueString(), plan.Port.ValueInt64())
-	addOptionalEngineListenerFields(ctx, CreateUpdateRequest, plan)
+	err := addOptionalEngineListenerFields(ctx, CreateUpdateRequest, plan)
+	if err != nil {
+		resp.Diagnostics.AddError("Failed to add optional properties to update request for AcmeServer", err.Error())
+		return
+	}
 	requestJson, err := CreateUpdateRequest.MarshalJSON()
 	if err == nil {
 		tflog.Debug(ctx, "Update request: "+string(requestJson))

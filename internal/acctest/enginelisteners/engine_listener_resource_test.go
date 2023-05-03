@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/pingidentity/terraform-provider-pingaccess/internal/acctest"
-	"github.com/pingidentity/terraform-provider-pingaccess/internal/provider"
-
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+	"github.com/pingidentity/terraform-provider-pingaccess/internal/acctest"
+	"github.com/pingidentity/terraform-provider-pingaccess/internal/provider"
 )
 
 const engineListenerId = "2"
@@ -76,11 +75,11 @@ func TestAccEngineListener(t *testing.T) {
 func testAccEngineListener(resourceName string, resourceModel engineListenerResourceModel) string {
 	return fmt.Sprintf(`
 resource "pingaccess_engine_listener" "%[1]s" {
-  id            = %[2]d
-  name               = "%[3]s"
-  port      = %[4]d
-  secure              = %[5]t
-	trusted_certificate_group_id = %[6]d
+  id                           = %[2]d
+  name                         = "%[3]s"
+  port                         = %[4]d
+  secure                       = %[5]t
+  trusted_certificate_group_id = %[6]d
 }`, resourceName,
 		resourceModel.id,
 		resourceModel.name,
