@@ -6,11 +6,6 @@ import (
 	"net/http"
 	"os"
 
-	accessTokenValidator "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/accesstokenvalidators"
-	acmeServers "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/acmeservers"
-	engineListener "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/enginelisteners"
-	internaltypes "github.com/pingidentity/terraform-provider-pingaccess/internal/types"
-
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
@@ -18,6 +13,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	client "github.com/pingidentity/pingaccess-go-client"
+	accessTokenValidator "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/accesstokenvalidators"
+	acmeServers "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/acmeservers"
+	engineListener "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/enginelisteners"
+	internaltypes "github.com/pingidentity/terraform-provider-pingaccess/internal/types"
 )
 
 // Ensure the implementation satisfies the expected interfacesß
@@ -163,6 +162,7 @@ func (p *pingaccessProvider) Configure(ctx context.Context, req provider.Configu
 	}
 	// TODO THIS IS NOT SAFE!! Eventually need to add way to trust a specific cert/signer here rather than just trusting everything
 	// https://stackoverflow.com/questions/12122159/how-to-do-a-https-request-with-bad-certificate
+	// #nosec G402
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}

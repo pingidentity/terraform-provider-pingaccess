@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-.PHONY: install generate fmt vet starttestcontainer removetestcontainer spincontainer clearstates kaboom testacc testacccomplete generateresource openlocalwebapi
+.PHONY: install generate fmt vet test starttestcontainer removetestcontainer spincontainer clearstates kaboom testacc testacccomplete generateresource openlocalwebapi golangcilint tfproviderlint tflint terrafmtlint importfmtlint
 
 default: install
 
@@ -18,6 +18,9 @@ fmt:
 
 vet:
 	go vet ./...
+	
+test:
+	go test -parallel=4 ./...
 
 starttestcontainer:
 	docker run --name pingaccess_terraform_provider_container \
@@ -48,14 +51,14 @@ testacc:
 	PINGACCESS_PROVIDER_PASSWORD=2Access \
 	TF_ACC=1 go test -timeout 10m -v ./internal/... -p 1
 
-testacccomplete: removetestcontainer starttestcontainer install testacc
+testacccomplete: spincontainer testacc
 
 clearstates:
 	find . -name "*tfstate*" -delete
 	
 kaboom: clearstates spincontainer install
 
-devcheck: kaboom testacc
+devcheck: golangcilint tfproviderlint tflint terrafmtlint importfmtlint install kaboom testacc
 
 generateresource: spincontainer
 	PINGACCESS_PROVIDER_HTTPS_HOST="https://localhost:9000" \
@@ -66,3 +69,26 @@ generateresource: spincontainer
 
 openlocalwebapi:
 	open "https://localhost:9000/pa-admin-api/v3/api-docs/"
+
+golangcilint:
+	go run github.com/golangci/golangci-lint/cmd/golangci-lint run --timeout 5m ./internal/...
+
+tfproviderlint: 
+	go run github.com/bflad/tfproviderlint/cmd/tfproviderlintx \
+									-c 1 \
+									-AT001.ignored-filename-suffixes=_test.go \
+									-AT003=false \
+									-XAT001=false \
+									-XR004=false \
+									-XS002=false ./internal/...
+
+tflint:
+	go run github.com/terraform-linters/tflint --recursive
+
+terrafmtlint:
+	find ./internal/acctest -type f -name '*_test.go' \
+		| sort -u \
+		| xargs -I {} go run github.com/katbyte/terrafmt -f fmt {} -v
+
+importfmtlint:
+	go run github.com/pavius/impi/cmd/impi --local . --scheme stdThirdPartyLocal ./internal/...

@@ -2,6 +2,7 @@ terraform {
   required_version = ">=1.1"
   required_providers {
     pingaccess = {
+      version = "~> 0.0.1"
       source = "pingidentity/pingaccess"
     }
   }

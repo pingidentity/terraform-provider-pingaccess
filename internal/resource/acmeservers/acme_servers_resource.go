@@ -3,9 +3,6 @@ package acmeservers
 import (
 	"context"
 
-	config "github.com/pingidentity/terraform-provider-pingaccess/internal/resource"
-	internaltypes "github.com/pingidentity/terraform-provider-pingaccess/internal/types"
-
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -15,6 +12,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	client "github.com/pingidentity/pingaccess-go-client"
+	config "github.com/pingidentity/terraform-provider-pingaccess/internal/resource"
+	internaltypes "github.com/pingidentity/terraform-provider-pingaccess/internal/types"
 )
 
 // Ensure the implementation satisfies the expected interfaces.
@@ -118,7 +117,11 @@ func (r *acmeserversResource) Create(ctx context.Context, req resource.CreateReq
 	}
 
 	createAcmeServer := client.NewAcmeServer(plan.Name.ValueString(), plan.Url.ValueString())
-	addOptionalAcmeServerFields(ctx, createAcmeServer, plan)
+	err := addOptionalAcmeServerFields(ctx, createAcmeServer, plan)
+	if err != nil {
+		resp.Diagnostics.AddError("Failed to add optional properties to add request for AcmeServer", err.Error())
+		return
+	}
 	requestJson, err := createAcmeServer.MarshalJSON()
 	if err == nil {
 		tflog.Debug(ctx, "Add request: "+string(requestJson))

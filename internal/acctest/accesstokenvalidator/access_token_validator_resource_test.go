@@ -4,14 +4,13 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/pingidentity/terraform-provider-pingaccess/internal/acctest"
-	"github.com/pingidentity/terraform-provider-pingaccess/internal/provider"
-	internaltypes "github.com/pingidentity/terraform-provider-pingaccess/internal/types"
-
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+	"github.com/pingidentity/terraform-provider-pingaccess/internal/acctest"
+	"github.com/pingidentity/terraform-provider-pingaccess/internal/provider"
+	internaltypes "github.com/pingidentity/terraform-provider-pingaccess/internal/types"
 )
 
 const Id = "3"
@@ -75,17 +74,17 @@ func TestAccAccessTokenValidator(t *testing.T) {
 func testAccAccessTokenValidator(resourceName string, resourceModel accessTokenValidatorResourceModel) string {
 	return fmt.Sprintf(`
 resource "pingaccess_access_token_validator" "%[1]s" {
-	classname = "%2s"
-  name = "%3s"
+  id        = %[2]d
+  classname = "%[3]s"
+  name      = "%[4]s"
   configuration = {
-    path = "%4s"
+    path = "%[5]s"
   }
-	id = %5d
 }`, resourceName,
+		resourceModel.id,
 		resourceModel.classname,
 		resourceModel.name,
 		resourceModel.path,
-		resourceModel.id,
 	)
 }
 

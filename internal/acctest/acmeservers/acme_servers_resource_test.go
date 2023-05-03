@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/pingidentity/terraform-provider-pingaccess/internal/acctest"
-	"github.com/pingidentity/terraform-provider-pingaccess/internal/provider"
-
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+	"github.com/pingidentity/terraform-provider-pingaccess/internal/acctest"
+	"github.com/pingidentity/terraform-provider-pingaccess/internal/provider"
 )
 
 const Id = "f9ee7432-01c0-46ed-8887-edae88ddba45"
@@ -59,9 +58,9 @@ func TestAccAcmeServer(t *testing.T) {
 func testAccAcmeServer(resourceName string, resourceModel acmeserversResourceModel) string {
 	return fmt.Sprintf(`
 resource "pingaccess_acme_servers" "%[1]s" {
-  id            = "%[2]s"
-  name               = "%[3]s"
-  url      = "%[4]s"
+  id   = "%[2]s"
+  name = "%[3]s"
+  url  = "%[4]s"
 }`, resourceName,
 		resourceModel.id,
 		resourceModel.name,

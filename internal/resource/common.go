@@ -1,8 +1,6 @@
 package config
 
 import (
-	internaltypes "github.com/pingidentity/terraform-provider-pingaccess/internal/types"
-
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/float64planmodifier"
@@ -10,6 +8,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+	internaltypes "github.com/pingidentity/terraform-provider-pingaccess/internal/types"
 )
 
 // Get schema elements common to all resources
