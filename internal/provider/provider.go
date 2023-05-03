@@ -6,8 +6,9 @@ import (
 	"net/http"
 	"os"
 
-	accessTokenValidator "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/accesstokenvalidator"
-	engineListener "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/enginelistener"
+	accessTokenValidator "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/accesstokenvalidators"
+	acmeServers "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/acmeservers"
+	engineListener "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/enginelisteners"
 	internaltypes "github.com/pingidentity/terraform-provider-pingaccess/internal/types"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -181,7 +182,8 @@ func (p *pingaccessProvider) DataSources(_ context.Context) []func() datasource.
 // Resources defines the resources implemented in the provider.
 func (p *pingaccessProvider) Resources(_ context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
-		engineListener.EngineListenerResource,
 		accessTokenValidator.AccessTokenValidatorResource,
+		acmeServers.AcmeServerResource,
+		engineListener.EngineListenerResource,
 	}
 }

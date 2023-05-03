@@ -6,7 +6,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
-	// client "github.com/pingidentity/pingaccess-go-client"
 )
 
 func StringToTF(v string) basetypes.StringValue {

@@ -9,6 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
+	client "github.com/pingidentity/pingaccess-go-client"
 )
 
 // Return true if this types.String represents an empty (but non-null and non-unknown) string
@@ -107,14 +108,13 @@ func MapValuesToClientMap(mv basetypes.MapValue, con context.Context) *map[strin
 	return &converted
 }
 
-// Converts the basetypes.MapValue to map[string]interface{} required for PingAccess Client
+// Converts the types.Object to map[string]interface{} required for PingAccess Client
 func ObjValuesToClientMap(obj types.Object) *map[string]interface{} {
 	attrs := obj.Attributes()
 	converted := map[string]interface{}{}
 	for key, value := range attrs {
 		strvalue, ok := value.(basetypes.StringValue)
 		if ok {
-			// make this nicer
 			if strvalue.IsNull() || strvalue.IsUnknown() {
 				continue
 			} else {
@@ -135,6 +135,30 @@ func ObjValuesToClientMap(obj types.Object) *map[string]interface{} {
 	}
 
 	return &converted
+}
+
+// Converts the types.Object to []client.Link required for PingAccess Client
+func ObjectValuesToClientLink(obj types.Object, con context.Context) client.Link {
+	attrs := obj.Attributes()
+	newLink := client.NewLink()
+	for key, value := range attrs {
+		strvalue, ok := value.(basetypes.StringValue)
+		if ok {
+			if strvalue.IsNull() || strvalue.IsUnknown() {
+				continue
+			} else {
+				switch key {
+				case "id":
+					newLink.SetId(strvalue.ValueString())
+				case "location":
+					newLink.SetLocation(strvalue.ValueString())
+				}
+				continue
+			}
+		}
+	}
+
+	return *newLink
 }
 
 // Converts the map[string]attr.Type to basetypes.ObjectValue required for Terraform
