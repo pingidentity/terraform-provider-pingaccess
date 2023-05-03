@@ -3,7 +3,7 @@ module github.com/pingidentity/terraform-provider-pingaccess
 go 1.19
 
 require (
-	github.com/bflad/tfproviderlint v0.28.1
+	github.com/bflad/tfproviderlint v0.29.0
 	github.com/golangci/golangci-lint v1.52.2
 	github.com/hashicorp/terraform-plugin-docs v0.14.1
 	github.com/hashicorp/terraform-plugin-framework v1.2.0
@@ -39,6 +39,7 @@ require (
 	github.com/alexkohler/prealloc v1.0.0 // indirect
 	github.com/alingse/asasalint v0.0.11 // indirect
 	github.com/apparentlymart/go-cidr v1.1.0 // indirect
+	github.com/apparentlymart/go-dump v0.0.0-20190214190832-042adf3cf4a0 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/armon/go-radix v1.0.0 // indirect
 	github.com/ashanbrown/forbidigo v1.5.1 // indirect
