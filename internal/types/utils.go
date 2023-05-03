@@ -108,7 +108,7 @@ func MapValuesToClientMap(mv basetypes.MapValue, con context.Context) *map[strin
 	return &converted
 }
 
-// Converts the basetypes.ObjectValue to map[string]interface{} required for PingAccess Client
+// Converts the types.Object to map[string]interface{} required for PingAccess Client
 func ObjValuesToClientMap(obj types.Object) *map[string]interface{} {
 	attrs := obj.Attributes()
 	converted := map[string]interface{}{}
@@ -160,8 +160,6 @@ func ObjectValuesToClientLink(obj types.Object, con context.Context) client.Link
 
 	return *newLink
 }
-
-// Converts []client.Link to basetypes.ObjectValue required for Terraform
 
 // Converts the map[string]attr.Type to basetypes.ObjectValue required for Terraform
 func MaptoObjValue(attributeTypes map[string]attr.Type, attributeValues map[string]attr.Value, diags diag.Diagnostics) basetypes.ObjectValue {
