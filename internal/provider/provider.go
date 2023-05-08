@@ -16,6 +16,7 @@ import (
 	accessTokenValidator "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/accesstokenvalidators"
 	acmeServers "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/acmeservers"
 	engineListener "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/enginelisteners"
+	hsmProvider "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/hsmproviders"
 	internaltypes "github.com/pingidentity/terraform-provider-pingaccess/internal/types"
 )
 
@@ -185,5 +186,6 @@ func (p *pingaccessProvider) Resources(_ context.Context) []func() resource.Reso
 		accessTokenValidator.AccessTokenValidatorResource,
 		acmeServers.AcmeServerResource,
 		engineListener.EngineListenerResource,
+		hsmProvider.HsmProviderResource,
 	}
 }
