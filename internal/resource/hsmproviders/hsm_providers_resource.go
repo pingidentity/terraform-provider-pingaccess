@@ -203,7 +203,11 @@ func (r *hsmProviderResource) Create(ctx context.Context, req resource.CreateReq
 	}
 	// passplain := plan.Configuration.Attributes()
 	createHsmProvider := client.NewHsmProvider(plan.ClassName.ValueString(), plan.Name.ValueString())
-	addOptionalHsmProviderFields(ctx, createHsmProvider, plan)
+	err := addOptionalHsmProviderFields(ctx, createHsmProvider, plan)
+	if err != nil {
+		resp.Diagnostics.AddError("Failed to add optional properties to add request for Hsm Provider", err.Error())
+		return
+	}
 	requestJson, err := createHsmProvider.MarshalJSON()
 	if err == nil {
 		tflog.Debug(ctx, "Add request: "+string(requestJson))
@@ -287,7 +291,11 @@ func updateHsmProvider(ctx context.Context, req resource.UpdateRequest, resp *re
 	req.State.Get(ctx, &state)
 	UpdateHsmProvider := apiClient.HsmProvidersApi.UpdateHsmProvider(config.ProviderBasicAuthContext(ctx, providerConfig), plan.Id.ValueString())
 	CreateUpdateRequest := client.NewHsmProvider(plan.ClassName.ValueString(), plan.Name.ValueString())
-	addOptionalHsmProviderFields(ctx, CreateUpdateRequest, plan)
+	err := addOptionalHsmProviderFields(ctx, CreateUpdateRequest, plan)
+	if err != nil {
+		resp.Diagnostics.AddError("Failed to add optional properties to update request for Hsm Provider", err.Error())
+		return
+	}
 	requestJson, err := CreateUpdateRequest.MarshalJSON()
 	if err == nil {
 		tflog.Debug(ctx, "Update request: "+string(requestJson))
