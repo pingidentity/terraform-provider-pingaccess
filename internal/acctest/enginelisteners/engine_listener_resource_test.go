@@ -92,6 +92,7 @@ resource "pingaccess_engine_listener" "%[1]s" {
 // Test that the expected attributes are set on the PingAccess server
 func testAccCheckExpectedEngineListenerAttributes(config engineListenerResourceModel) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
+		resourceType := "Engine Listener"
 		testClient := acctest.TestClient()
 		ctx := acctest.TestBasicAuthContext()
 		response, _, err := testClient.EngineListenersApi.GetEngineListener(ctx, config.stateId).Execute()
@@ -99,7 +100,6 @@ func testAccCheckExpectedEngineListenerAttributes(config engineListenerResourceM
 			return err
 		}
 		// Verify that attributes have expected values
-		resourceType := "Engine Listener"
 		err = acctest.TestAttributesMatchString(resourceType, &config.stateId, "name",
 			config.name, response.Name)
 		if err != nil {
