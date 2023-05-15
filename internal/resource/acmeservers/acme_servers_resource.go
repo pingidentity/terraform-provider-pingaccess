@@ -129,12 +129,12 @@ func (r *acmeserversResource) Create(ctx context.Context, req resource.CreateReq
 
 	apiCreateAcmeServer := r.apiClient.AcmeApi.AddAcmeServer(config.ProviderBasicAuthContext(ctx, r.providerConfig))
 	apiCreateAcmeServer = apiCreateAcmeServer.AcmeServer(*createAcmeServer)
-	listenerResponse, httpResp, err := r.apiClient.AcmeApi.AddAcmeServerExecute(apiCreateAcmeServer)
+	acmeServerResponse, httpResp, err := r.apiClient.AcmeApi.AddAcmeServerExecute(apiCreateAcmeServer)
 	if err != nil {
 		config.ReportHttpError(ctx, &resp.Diagnostics, "An error occurred while creating the AcmeServer", err, httpResp)
 		return
 	}
-	responseJson, err := listenerResponse.MarshalJSON()
+	responseJson, err := acmeServerResponse.MarshalJSON()
 	if err == nil {
 		tflog.Debug(ctx, "Add response: "+string(responseJson))
 	}
@@ -142,7 +142,7 @@ func (r *acmeserversResource) Create(ctx context.Context, req resource.CreateReq
 	// Read the response into the state
 	var state acmeserversResourceModel
 
-	readAcmeServerResponse(ctx, listenerResponse, &state, &plan, &resp.Diagnostics)
+	readAcmeServerResponse(ctx, acmeServerResponse, &state, &plan, &resp.Diagnostics)
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {

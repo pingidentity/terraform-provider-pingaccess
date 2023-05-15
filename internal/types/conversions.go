@@ -31,7 +31,36 @@ func Int64ToString(value types.Int64) string {
 }
 
 // Get a types.Set from a slice of strings
-func GetStringSet(values string) types.Set {
+func GetStringSet(values []string) types.Set {
+	setValues := make([]attr.Value, len(values))
+	for i := 0; i < len(values); i++ {
+		setValues[i] = types.StringValue(values[i])
+	}
+	set, _ := types.SetValue(types.StringType, setValues)
+	return set
+}
+
+// Get a types.Set from an interface
+func InterfaceStringSetOrNil(values interface{}) types.Set {
+	if values != nil {
+		interfaceToString, _ := values.([]interface{})
+		if len(interfaceToString) >= 1 {
+			setValues := make([]attr.Value, len(interfaceToString))
+			for i := 0; i < len(interfaceToString); i++ {
+				setValues[i] = types.StringValue(interfaceToString[i].(string))
+			}
+			set, _ := types.SetValue(types.StringType, setValues)
+			return set
+		} else {
+			return types.SetNull(types.StringType)
+		}
+	} else {
+		return types.SetNull(types.StringType)
+	}
+}
+
+// Get a types.Set from a slice of strings
+func StringSetOrNull(values string) types.Set {
 	setValues := make([]attr.Value, len(values))
 	set, _ := types.SetValue(types.StringType, setValues)
 	return set
@@ -64,12 +93,39 @@ func StringTypeOrNil(str *string, useEmptyStringForNil bool) types.String {
 	return types.StringValue(*str)
 }
 
+// Get a types.String from the given interface pointer, handling if the interface is nil
+func InterfaceStringOrNil(i interface{}) string {
+	if i == nil {
+		return ""
+	}
+
+	return i.(string)
+}
+
+// Get a nested key from given interface, handling if the value is nil
+func GetNestedInterfaceKey(i interface{}, nestedKey string) types.String {
+	if i != nil && nestedKey != "" {
+		return StringValueOrNull(i.(map[string]interface{})[nestedKey])
+	} else {
+		return types.StringNull()
+	}
+}
+
 // Get a types.Bool from the given bool pointer, handling if the pointer is nil
 func BoolTypeOrNil(b *bool) types.Bool {
 	if b == nil {
 		return types.BoolNull()
 	}
 	return types.BoolValue(*b)
+}
+
+// Get a types.Bool from the given interface pointer, handling if the interface is nil
+func InterfaceBoolTypeOrNull(i interface{}) types.Bool {
+	if i == nil {
+		return types.BoolNull()
+	}
+
+	return types.BoolValue(i.(bool))
 }
 
 // Get a types.Int64 from the given int32 pointer, handling if the pointer is nil
@@ -81,6 +137,15 @@ func Int64TypeOrNil(i *int32) types.Int64 {
 	return types.Int64Value(int64(*i))
 }
 
+// Get a types.Int64 from the given interface, handling if the pointer is nil
+func InterfaceFloat64TypeOrNull(i interface{}) types.Float64 {
+	if i == nil {
+		return types.Float64Null()
+	}
+
+	return types.Float64Value(i.(float64))
+}
+
 // Get a types.Float64 from the given float32 pointer, handling if the pointer is nil
 func Float64TypeOrNil(f *float32) types.Float64 {
 	if f == nil {
@@ -90,7 +155,7 @@ func Float64TypeOrNil(f *float32) types.Float64 {
 	return types.Float64Value(float64(*f))
 }
 
-// Get types.Map form slice of Strings
+// Get types.Map from slice of Strings
 func GetStringMap(m *string) types.Map {
 	setValues := make(map[string]attr.Value)
 	set, _ := types.MapValue(types.StringType, setValues)
