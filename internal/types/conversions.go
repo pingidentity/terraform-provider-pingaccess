@@ -48,7 +48,7 @@ func GetStringSetarray(values []string) types.Set {
 }
 
 // Get a types.Set from a slice of int64
-func GetInt64SetfromInt64(values []int64) types.Set {
+func GetInt64Set(values []int64) types.Set {
 	setValues := make([]attr.Value, len(values))
 	for i := 0; i < len(values); i++ {
 		setValues[i] = types.Int64Value(int64(values[i]))
