@@ -30,8 +30,8 @@ func Int64ToString(value types.Int64) string {
 	return strconv.FormatInt(value.ValueInt64(), 10)
 }
 
-// Get a types.Set from a slice of array string
-func GetStringSetarray(values []string) types.Set {
+// Get a types.Set from a slice of string
+func GetStringSet(values []string) types.Set {
 	setValues := make([]attr.Value, len(values))
 	for i := 0; i < len(values); i++ {
 		setValues[i] = types.StringValue(string(values[i]))

@@ -123,13 +123,6 @@ func addOptionalHsmProviderFields(ctx context.Context, addRequest *client.HsmPro
 	return nil
 }
 
-// func passwordstate(p hsmProviderResourceModel) map[string]interface{} {
-// Configuration := *internaltypes.ObjValuesToClientMap(p.Configuration)
-// maptojson, _ := json.Marshal(Configuration)
-// 	return Configuration
-// }
-
-// }
 // Metadata returns the resource type name.
 func (r *hsmProviderResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_hsm_providers"
