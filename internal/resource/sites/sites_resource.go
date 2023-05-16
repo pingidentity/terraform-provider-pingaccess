@@ -268,7 +268,7 @@ func readSiteResponse(ctx context.Context, r *client.Site, state *siteResourceMo
 	state.SendPaCookie = internaltypes.BoolTypeOrNil(r.SendPaCookie)
 	state.SiteAuthenticatorIds = internaltypes.GetInt64Set(r.SiteAuthenticatorIds)
 	state.SkipHostnameVerification = internaltypes.BoolTypeOrNil(r.SkipHostnameVerification)
-	state.Targets = internaltypes.GetStringSetarray(r.Targets)
+	state.Targets = internaltypes.GetStringSet(r.Targets)
 	state.TrustedCertificateGroupId = types.Int64Value(*r.TrustedCertificateGroupId)
 	state.UseProxy = internaltypes.BoolTypeOrNil(r.UseProxy)
 	state.UseTargetHostHeader = internaltypes.BoolTypeOrNil(r.UseTargetHostHeader)

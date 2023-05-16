@@ -14,7 +14,6 @@ provider "pingaccess" {
   https_host = "https://localhost:9000"
 }
 
-
 resource "pingaccess_sites" "siteExample" {
 	name = "example"	
 	targets = ["localhost:80","localhost:443"]
