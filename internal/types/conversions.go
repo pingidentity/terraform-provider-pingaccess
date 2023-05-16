@@ -37,8 +37,18 @@ func GetStringSet(values string) types.Set {
 	return set
 }
 
-// Get a types.Set from a slice of int32
-func GetInt64Set(values []int32) types.Set {
+// Get a types.Set from a slice of array string
+func GetStringSetarray(values []string) types.Set {
+	setValues := make([]attr.Value, len(values))
+	for i := 0; i < len(values); i++ {
+		setValues[i] = types.StringValue(string(values[i]))
+	}
+	set, _ := types.SetValue(types.StringType, setValues)
+	return set
+}
+
+// Get a types.Set from a slice of int64
+func GetInt64SetfromInt64(values []int64) types.Set {
 	setValues := make([]attr.Value, len(values))
 	for i := 0; i < len(values); i++ {
 		setValues[i] = types.Int64Value(int64(values[i]))
