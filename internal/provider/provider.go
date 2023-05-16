@@ -18,6 +18,7 @@ import (
 	engineListener "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/enginelisteners"
 	hsmProvider "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/hsmproviders"
 	sites "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/sites"
+	thirdPartyService "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/thirdpartyservices"
 	virtualHost "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/virtualhosts"
 	internaltypes "github.com/pingidentity/terraform-provider-pingaccess/internal/types"
 )
@@ -190,6 +191,7 @@ func (p *pingaccessProvider) Resources(_ context.Context) []func() resource.Reso
 		engineListener.EngineListenerResource,
 		hsmProvider.HsmProviderResource,
 		sites.SiteResource,
+		thirdPartyService.ThirdPartyServiceResource,
 		virtualHost.VirtualHostResource,
 	}
 }
