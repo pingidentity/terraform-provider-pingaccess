@@ -69,8 +69,8 @@ func TestAccAuthnReqList(t *testing.T) {
 func testAccAuthnReqList(resourceName string, resourceModel authnReqListResourceModel) string {
 	return fmt.Sprintf(`
 resource "pingaccess_authn_req_lists" "%[1]s" {
-  id = "%[2]d"
-	name       = "%[3]s"
+  id         = "%[2]d"
+  name       = "%[3]s"
   authn_reqs = %[4]s
 }`, resourceName,
 		resourceModel.id,
