@@ -113,7 +113,25 @@ func ObjValuesToClientMap(obj types.Object) *map[string]interface{} {
 	attrs := obj.Attributes()
 	converted := map[string]interface{}{}
 	for key, value := range attrs {
-		converted[UnderscoresToCamelCase(key)] = ConvertToPrimitive(value)
+		strvalue, ok := value.(basetypes.StringValue)
+		if ok {
+			if strvalue.IsNull() || strvalue.IsUnknown() {
+				continue
+			} else {
+				converted[UnderscoresToCamelCase(key)] = strvalue.ValueString()
+				continue
+			}
+		}
+		boolvalue, ok := value.(basetypes.BoolValue)
+		if ok {
+			converted[key] = boolvalue.ValueBool()
+			continue
+		}
+		int64value, ok := value.(basetypes.Int64Value)
+		if ok {
+			converted[key] = int64value.ValueInt64()
+			continue
+		}
 	}
 
 	return &converted
