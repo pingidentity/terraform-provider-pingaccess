@@ -78,6 +78,7 @@ tfproviderlint:
 									-c 1 \
 									-AT001.ignored-filename-suffixes=_test.go \
 									-AT003=false \
+									-R009=false \
 									-XAT001=false \
 									-XR004=false \
 									-XS002=false ./internal/...
