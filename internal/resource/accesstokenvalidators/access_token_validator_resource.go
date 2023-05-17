@@ -57,7 +57,7 @@ func accessTokenValidatorResourceSchema(ctx context.Context, req resource.Schema
 				Computed: true,
 				Optional: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.RequiresReplace(),
 				},
 			},
 			"name": schema.StringAttribute{

@@ -15,6 +15,7 @@ import (
 	client "github.com/pingidentity/pingaccess-go-client"
 	accessTokenValidator "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/accesstokenvalidators"
 	acmeServers "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/acmeservers"
+	authnReqList "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/authnreqlists"
 	engineListener "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/enginelisteners"
 	hsmProvider "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/hsmproviders"
 	sites "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/sites"
@@ -188,6 +189,7 @@ func (p *pingaccessProvider) Resources(_ context.Context) []func() resource.Reso
 	return []func() resource.Resource{
 		accessTokenValidator.AccessTokenValidatorResource,
 		acmeServers.AcmeServerResource,
+		authnReqList.AuthnReqListResource,
 		engineListener.EngineListenerResource,
 		hsmProvider.HsmProviderResource,
 		sites.SiteResource,

@@ -68,7 +68,7 @@ func siteResourceSchema(ctx context.Context, req resource.SchemaRequest, resp *r
 				Computed: true,
 				Optional: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.RequiresReplace(),
 				},
 			},
 			"name": schema.StringAttribute{

@@ -57,7 +57,7 @@ func hsmProviderResourceSchema(ctx context.Context, req resource.SchemaRequest, 
 				Computed: true,
 				Optional: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.RequiresReplace(),
 				},
 			},
 			"name": schema.StringAttribute{

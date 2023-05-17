@@ -137,6 +137,71 @@ func ObjValuesToClientMap(obj types.Object) *map[string]interface{} {
 	return &converted
 }
 
+func ConvertToPrimitive(value attr.Value) interface{} {
+	// Handle primitives
+	strvalue, ok := value.(basetypes.StringValue)
+	if ok {
+		return strvalue.ValueString()
+	}
+	boolvalue, ok := value.(basetypes.BoolValue)
+	if ok {
+		return boolvalue.ValueBool()
+	}
+	int64value, ok := value.(basetypes.Int64Value)
+	if ok {
+		return int64value.ValueInt64()
+	}
+	float64value, ok := value.(basetypes.Float64Value)
+	if ok {
+		return float64value.ValueFloat64()
+	}
+
+	// Handle lists and sets
+	listvalue, ok := value.(basetypes.ListValue)
+	if ok {
+		elements := listvalue.Elements()
+		var primitiveElements []interface{}
+		for _, el := range elements {
+			primitiveElements = append(primitiveElements, ConvertToPrimitive(el))
+		}
+		return primitiveElements
+	}
+
+	setvalue, ok := value.(basetypes.SetValue)
+	if ok {
+		elements := setvalue.Elements()
+		var primitiveElements []interface{}
+		for _, el := range elements {
+			primitiveElements = append(primitiveElements, ConvertToPrimitive(el))
+		}
+		return primitiveElements
+	}
+
+	// Handle maps
+	mapvalue, ok := value.(basetypes.MapValue)
+	if ok {
+		mapElements := mapvalue.Elements()
+		primitiveMap := map[string]interface{}{}
+		for key, el := range mapElements {
+			primitiveMap[UnderscoresToCamelCase(key)] = ConvertToPrimitive(el)
+		}
+		return primitiveMap
+	}
+
+	// Handle objects
+	objvalue, ok := value.(basetypes.ObjectValue)
+	if ok {
+		mapElements := objvalue.Attributes()
+		primitiveMap := map[string]interface{}{}
+		for key, el := range mapElements {
+			primitiveMap[UnderscoresToCamelCase(key)] = ConvertToPrimitive(el)
+		}
+		return primitiveMap
+	}
+
+	panic("Panic reached. Unable to convert given primitive type.")
+}
+
 // Converts the types.Object to []client.Link required for PingAccess Client
 func ObjectValuesToClientLink(obj types.Object, con context.Context) client.Link {
 	attrs := obj.Attributes()
@@ -176,4 +241,21 @@ func StringValueOrNull(value interface{}) types.String {
 	} else {
 		return types.StringValue(value.(string))
 	}
+}
+
+func CreateKeysFromAttrValues(attrValues map[string]attr.Value) []string {
+	attrKeys := make([]string, 0, len(attrValues))
+	for k := range attrValues {
+		attrKeys = append(attrKeys, k)
+	}
+	return attrKeys
+}
+
+func CheckListKeyMatch(k string, list []string) bool {
+	for _, key_check := range list {
+		if k == key_check {
+			return true
+		}
+	}
+	return false
 }
