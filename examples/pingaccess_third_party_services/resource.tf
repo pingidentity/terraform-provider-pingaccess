@@ -15,7 +15,7 @@ provider "pingaccess" {
 }
 
 resource "pingaccess_third_party_services" "thirdPartyServiceExample" {
-	name = "example"	
+	name = "example"
   availability_profile_id = 1
 	targets = ["localhost:80","localhost:443"]
 }
