@@ -65,7 +65,6 @@ func thirdPartyServiceResourceSchema(ctx context.Context, req resource.SchemaReq
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
-				// Add the other necessary attributes here
 			},
 			"name": schema.StringAttribute{
 				Required: true,
