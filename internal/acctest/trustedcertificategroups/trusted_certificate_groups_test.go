@@ -104,7 +104,7 @@ func testAccCheckExpectedTrustedCertificateGroupAttributes(config trustedCertifi
 			return err
 		}
 
-		err = acctest.TestAttributesMatchBool(resourceType, &config.stateId, "ocsp",
+		err = acctest.TestAttributesMatchBool(resourceType, &config.name, "ocsp",
 			config.ocsp, *response.RevocationChecking.Ocsp)
 		if err != nil {
 			return err
