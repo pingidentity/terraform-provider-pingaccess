@@ -16,28 +16,28 @@ const trustedCertificateGroupId = "3"
 
 // Attributes to test with. Add optional properties to test here if desired.
 type trustedCertificateGroupResourceModel struct {
-	id                int64
-	stateId           string
-	useJavaTrustStore bool
-	ocsp              bool
-	name              string
+	id          int64
+	stateId     string
+	crlChecking bool
+	ocsp        bool
+	name        string
 }
 
 func TestAccTrustedCertificateGroup(t *testing.T) {
 	resourceName := "myTrustedCertificateGroup"
 	initialResourceModel := trustedCertificateGroupResourceModel{
-		id:                3,
-		stateId:           "3",
-		useJavaTrustStore: true,
-		ocsp:              true,
-		name:              "example",
+		id:          3,
+		stateId:     "3",
+		crlChecking: true,
+		ocsp:        true,
+		name:        "example",
 	}
 	updatedResourceModel := trustedCertificateGroupResourceModel{
-		id:                3,
-		stateId:           "3",
-		useJavaTrustStore: true,
-		ocsp:              false,
-		name:              "example2",
+		id:          3,
+		stateId:     "3",
+		crlChecking: false,
+		ocsp:        false,
+		name:        "example2",
 	}
 
 	resource.Test(t, resource.TestCase{
@@ -76,11 +76,13 @@ resource "pingaccess_trusted_certificate_groups" "%[1]s" {
   name                 = "%[3]s"
   use_java_trust_store = true
   revocation_checking = {
-    ocsp = %[4]t
+		crl_checking = %[4]t
+    ocsp = %[5]t
   }
 }`, resourceName,
 		resourceModel.id,
 		resourceModel.name,
+		resourceModel.crlChecking,
 		resourceModel.ocsp,
 	)
 }
@@ -92,7 +94,6 @@ func testAccCheckExpectedTrustedCertificateGroupAttributes(config trustedCertifi
 		testClient := acctest.TestClient()
 		ctx := acctest.TestBasicAuthContext()
 		response, _, err := testClient.TrustedCertificateGroupsApi.GetTrustedCertificateGroup(ctx, config.stateId).Execute()
-
 		if err != nil {
 			return err
 		}
@@ -104,8 +105,15 @@ func testAccCheckExpectedTrustedCertificateGroupAttributes(config trustedCertifi
 			return err
 		}
 
+		rc := response.GetRevocationChecking()
+		err = acctest.TestAttributesMatchBool(resourceType, &config.name, "crl_checking",
+			config.ocsp, *rc.CrlChecking)
+		if err != nil {
+			return err
+		}
+
 		err = acctest.TestAttributesMatchBool(resourceType, &config.name, "ocsp",
-			config.ocsp, *response.RevocationChecking.Ocsp)
+			config.ocsp, *rc.Ocsp)
 		if err != nil {
 			return err
 		}
