@@ -20,6 +20,7 @@ import (
 	hsmProvider "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/hsmproviders"
 	sites "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/sites"
 	thirdPartyService "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/thirdpartyservices"
+	trustedCertificateGroup "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/trustedcertificategroups"
 	virtualHost "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/virtualhosts"
 	internaltypes "github.com/pingidentity/terraform-provider-pingaccess/internal/types"
 )
@@ -194,6 +195,7 @@ func (p *pingaccessProvider) Resources(_ context.Context) []func() resource.Reso
 		hsmProvider.HsmProviderResource,
 		sites.SiteResource,
 		thirdPartyService.ThirdPartyServiceResource,
+		trustedCertificateGroup.TrustedCertificateGroupResource,
 		virtualHost.VirtualHostResource,
 	}
 }
