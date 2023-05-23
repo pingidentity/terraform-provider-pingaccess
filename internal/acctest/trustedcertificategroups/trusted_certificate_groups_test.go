@@ -76,8 +76,8 @@ resource "pingaccess_trusted_certificate_groups" "%[1]s" {
   name                 = "%[3]s"
   use_java_trust_store = true
   revocation_checking = {
-		crl_checking = %[4]t
-    ocsp = %[5]t
+    crl_checking = %[4]t
+    ocsp         = %[5]t
   }
 }`, resourceName,
 		resourceModel.id,
