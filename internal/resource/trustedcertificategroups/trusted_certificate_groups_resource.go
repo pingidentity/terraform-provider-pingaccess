@@ -77,6 +77,9 @@ func trustedCertificateGroupResourceSchema(ctx context.Context, req resource.Sch
 			"ignore_all_certificate_errors": schema.BoolAttribute{
 				Computed: true,
 				Optional: true,
+				PlanModifiers: []planmodifier.Bool{
+					boolplanmodifier.UseStateForUnknown(),
+				},
 			},
 			"name": schema.StringAttribute{
 				Required: true,
@@ -101,32 +104,53 @@ func trustedCertificateGroupResourceSchema(ctx context.Context, req resource.Sch
 					"deny_revocation_status_unknown": schema.BoolAttribute{
 						Computed: true,
 						Optional: true,
+						PlanModifiers: []planmodifier.Bool{
+							boolplanmodifier.UseStateForUnknown(),
+						},
 					},
 					"crl_checking": schema.BoolAttribute{
 						Computed: true,
 						Optional: true,
+						PlanModifiers: []planmodifier.Bool{
+							boolplanmodifier.UseStateForUnknown(),
+						},
 					},
 					"ocsp": schema.BoolAttribute{
 						Computed: true,
 						Optional: true,
+						PlanModifiers: []planmodifier.Bool{
+							boolplanmodifier.UseStateForUnknown(),
+						},
 					},
 					"support_disordered_chain": schema.BoolAttribute{
 						Computed: true,
 						Optional: true,
+						PlanModifiers: []planmodifier.Bool{
+							boolplanmodifier.UseStateForUnknown(),
+						},
 					},
 					"skip_trust_anchors": schema.BoolAttribute{
 						Computed: true,
 						Optional: true,
+						PlanModifiers: []planmodifier.Bool{
+							boolplanmodifier.UseStateForUnknown(),
+						},
 					},
 				},
 			},
 			"skip_certificate_date_check": schema.BoolAttribute{
 				Computed: true,
 				Optional: true,
+				PlanModifiers: []planmodifier.Bool{
+					boolplanmodifier.UseStateForUnknown(),
+				},
 			},
 			"system_group": schema.BoolAttribute{
 				Computed: true,
 				Optional: true,
+				PlanModifiers: []planmodifier.Bool{
+					boolplanmodifier.UseStateForUnknown(),
+				},
 			},
 		},
 	}

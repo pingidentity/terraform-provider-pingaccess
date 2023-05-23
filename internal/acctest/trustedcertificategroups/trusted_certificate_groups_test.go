@@ -58,12 +58,11 @@ func TestAccTrustedCertificateGroup(t *testing.T) {
 			},
 			{
 				// Test importing the resource
-				Config:                  testAccTrustedCertificateGroup(resourceName, updatedResourceModel),
-				ResourceName:            "pingaccess_trusted_certificate_groups." + resourceName,
-				ImportStateId:           trustedCertificateGroupId,
-				ImportState:             true,
-				ImportStateVerify:       true,
-				ImportStateVerifyIgnore: []string{"items"},
+				Config:            testAccTrustedCertificateGroup(resourceName, updatedResourceModel),
+				ResourceName:      "pingaccess_trusted_certificate_groups." + resourceName,
+				ImportStateId:     trustedCertificateGroupId,
+				ImportState:       true,
+				ImportStateVerify: true,
 			},
 		},
 	})
