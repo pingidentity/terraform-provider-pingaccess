@@ -50,6 +50,20 @@ func GetInt64Set(values []int64) types.Set {
 	return set
 }
 
+// Get a types.Set from a slice of int64 or null set
+func GetInt64SetOrNull(values []int64) types.Set {
+	if len(values) >= 1 {
+		setValues := make([]attr.Value, len(values))
+		for i := 0; i < len(values); i++ {
+			setValues[i] = types.Int64Value(int64(values[i]))
+		}
+		set, _ := types.SetValue(types.Int64Type, setValues)
+		return set
+	} else {
+		return types.SetNull(types.Int64Type)
+	}
+}
+
 // Get a types.String from the given string pointer, handling if the pointer is nil
 func StringTypeOrNil(str *string, useEmptyStringForNil bool) types.String {
 	if str == nil {
@@ -76,13 +90,19 @@ func InterfaceStringOrNil(i interface{}) string {
 	return i.(string)
 }
 
-// Get a nested key from given interface, handling if the value is nil
-func GetNestedInterfaceKey(i interface{}, nestedKey string) types.String {
+// Get a nested key value from given interface, handling if the value is nil
+func GetNestedInterfaceKeyStringValue(i interface{}, nestedKey string) types.String {
 	if i != nil && nestedKey != "" {
 		return StringValueOrNull(i.(map[string]interface{})[nestedKey])
 	} else {
 		return types.StringNull()
 	}
+}
+
+// Get a nested key value from given interface, handling if the value is nil
+func GetNestedInterfaceKeyBoolValuePointer(i interface{}, nestedKey string) *bool {
+	boolPointer := (i.(map[string]interface{})[nestedKey]).(bool)
+	return &boolPointer
 }
 
 // Get a types.Bool from the given bool pointer, handling if the pointer is nil
@@ -100,6 +120,12 @@ func InterfaceBoolTypeOrNull(i interface{}) types.Bool {
 	}
 
 	return types.BoolValue(i.(bool))
+}
+
+// Get a types.Bool from the given interface pointer, handling if the interface is nil
+func InterfaceBoolPointerValue(i interface{}) *bool {
+	value := i.(bool)
+	return &value
 }
 
 // Get a types.Int64 from the given int32 pointer, handling if the pointer is nil

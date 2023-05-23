@@ -108,7 +108,7 @@ func MapValuesToClientMap(mv basetypes.MapValue, con context.Context) *map[strin
 	return &converted
 }
 
-// Converts the types.Object to map[string]interface{} required for PingAccess Client
+// Converts the types.Object to *map[string]interface{} required for PingAccess Client
 func ObjValuesToClientMap(obj types.Object) *map[string]interface{} {
 	attrs := obj.Attributes()
 	converted := map[string]interface{}{}
@@ -135,6 +135,35 @@ func ObjValuesToClientMap(obj types.Object) *map[string]interface{} {
 	}
 
 	return &converted
+}
+
+// Converts the types.Object to map[string]interface{} required for PingAccess Client
+func ObjValuesToMapNoPointer(obj types.Object) map[string]interface{} {
+	attrs := obj.Attributes()
+	converted := map[string]interface{}{}
+	for key, value := range attrs {
+		strvalue, ok := value.(basetypes.StringValue)
+		if ok {
+			if strvalue.IsNull() || strvalue.IsUnknown() {
+				continue
+			} else {
+				converted[UnderscoresToCamelCase(key)] = strvalue.ValueString()
+				continue
+			}
+		}
+		boolvalue, ok := value.(basetypes.BoolValue)
+		if ok {
+			converted[key] = boolvalue.ValueBool()
+			continue
+		}
+		int64value, ok := value.(basetypes.Int64Value)
+		if ok {
+			converted[key] = int64value.ValueInt64()
+			continue
+		}
+	}
+
+	return converted
 }
 
 func ConvertToPrimitive(value attr.Value) interface{} {
