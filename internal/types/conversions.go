@@ -40,6 +40,17 @@ func GetStringSet(values []string) types.Set {
 	return set
 }
 
+// Get a types.Set from a slice of string
+func GetInterfaceStringSet(i interface{}) types.Set {
+	values := i.([]interface{})
+	setValues := make([]attr.Value, len(values))
+	for i := 0; i < len(values); i++ {
+		setValues[i] = types.StringValue(string(values[i].(string)))
+	}
+	set, _ := types.SetValue(types.StringType, setValues)
+	return set
+}
+
 // Get a types.Set from a slice of int64
 func GetInt64Set(values []int64) types.Set {
 	setValues := make([]attr.Value, len(values))
@@ -61,6 +72,52 @@ func GetInt64SetOrNull(values []int64) types.Set {
 		return set
 	} else {
 		return types.SetNull(types.Int64Type)
+	}
+}
+
+// Get a types.Set from a slice of int64 or null set
+func GetInt64InterfaceSetOrNull(i interface{}) types.Set {
+	values := i.([]int64)
+	if len(values) >= 1 {
+		setValues := make([]attr.Value, len(values))
+		for i := 0; i < len(values); i++ {
+			setValues[i] = types.Int64Value(int64(values[i]))
+		}
+		set, _ := types.SetValue(types.Int64Type, setValues)
+		return set
+	} else {
+		return types.SetNull(types.Int64Type)
+	}
+}
+
+// Get a types.Set from a slice of float64 or null set
+func GetFloat64InterfaceSetOrNull(i interface{}) types.Set {
+	values := i.([]interface{})
+	if i != nil && len(values) >= 1 {
+		setValues := make([]attr.Value, len(values))
+		for i := 0; i < len(values); i++ {
+			setValues[i] = types.Float64Value(float64(values[i].(float64)))
+		}
+		set, _ := types.SetValue(types.Float64Type, setValues)
+		return set
+	} else {
+		return types.SetNull(types.Float64Type)
+	}
+}
+
+// Get a types.Set from a slice of strings and converts values to floats or null set
+func StringInterfaceSetToFloat64OrNull(i interface{}) types.Set {
+	values := i.([]interface{})
+	if i != nil && len(values) >= 1 {
+		setValues := make([]attr.Value, len(values))
+		for i := 0; i < len(values); i++ {
+			valueToString, _ := strconv.ParseFloat(values[i].(string), 64)
+			setValues[i] = types.Float64Value(float64(valueToString))
+		}
+		set, _ := types.SetValue(types.Float64Type, setValues)
+		return set
+	} else {
+		return types.SetNull(types.Float64Type)
 	}
 }
 
@@ -128,6 +185,15 @@ func InterfaceBoolPointerValue(i interface{}) *bool {
 	return &value
 }
 
+// Get a string pointer from the given interface, handling if the interface is nil
+func InterfaceStringPointerValue(i interface{}) *string {
+	if i != nil {
+		value := i.(string)
+		return &value
+	}
+	return basetypes.NewStringNull().ValueStringPointer()
+}
+
 // Get a types.Int64 from the given int32 pointer, handling if the pointer is nil
 func Int64TypeOrNil(i *int32) types.Int64 {
 	if i == nil {
@@ -135,6 +201,15 @@ func Int64TypeOrNil(i *int32) types.Int64 {
 	}
 
 	return types.Int64Value(int64(*i))
+}
+
+// Get a types.Int64 from the given interface, handling if the pointer is nil
+func Int64InterfaceTypeOrNil(i interface{}) types.Int64 {
+	if i == nil {
+		return types.Int64Null()
+	}
+
+	return types.Int64Value(int64(i.(int64)))
 }
 
 // Get a types.Int64 from the given interface, handling if the pointer is nil

@@ -17,6 +17,7 @@ import (
 	acmeServers "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/acmeservers"
 	authnReqList "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/authnreqlists"
 	engineListener "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/enginelisteners"
+	highAvailabilityProfiles "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/highavailabilityprofiles"
 	hsmProvider "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/hsmproviders"
 	sites "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/sites"
 	thirdPartyService "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/thirdpartyservices"
@@ -192,6 +193,7 @@ func (p *pingaccessProvider) Resources(_ context.Context) []func() resource.Reso
 		acmeServers.AcmeServerResource,
 		authnReqList.AuthnReqListResource,
 		engineListener.EngineListenerResource,
+		highAvailabilityProfiles.AvailabilityProfileResource,
 		hsmProvider.HsmProviderResource,
 		sites.SiteResource,
 		thirdPartyService.ThirdPartyServiceResource,
