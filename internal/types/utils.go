@@ -80,6 +80,28 @@ func SetsEqual(a, b []string) bool {
 	return true
 }
 
+// Check if two  float slices representing sets are equal
+func FloatSetsEqual(a, b []float64) bool {
+	if len(a) != len(b) {
+		return false
+	}
+
+	// Assuming there are no duplicate elements since the slices represent sets
+	for _, aElement := range a {
+		found := false
+		for _, bElement := range b {
+			if aElement == bElement {
+				found = true
+				break
+			}
+		}
+		if !found {
+			return false
+		}
+	}
+	return true
+}
+
 func CamelCaseToUnderscores(s string) string {
 	re, _ := regexp.Compile(`([A-Z])`)
 	res := re.ReplaceAllStringFunc(s, func(m string) string {
@@ -124,12 +146,12 @@ func ObjValuesToClientMap(obj types.Object) *map[string]interface{} {
 		}
 		boolvalue, ok := value.(basetypes.BoolValue)
 		if ok {
-			converted[key] = boolvalue.ValueBool()
+			converted[UnderscoresToCamelCase(key)] = boolvalue.ValueBool()
 			continue
 		}
 		int64value, ok := value.(basetypes.Int64Value)
 		if ok {
-			converted[key] = int64value.ValueInt64()
+			converted[UnderscoresToCamelCase(key)] = int64value.ValueInt64()
 			continue
 		}
 	}
@@ -153,13 +175,22 @@ func ObjValuesToMapNoPointer(obj types.Object) map[string]interface{} {
 		}
 		boolvalue, ok := value.(basetypes.BoolValue)
 		if ok {
-			converted[key] = boolvalue.ValueBool()
+			converted[UnderscoresToCamelCase(key)] = boolvalue.ValueBool()
 			continue
 		}
 		int64value, ok := value.(basetypes.Int64Value)
 		if ok {
-			converted[key] = int64value.ValueInt64()
+			converted[UnderscoresToCamelCase(key)] = int64value.ValueInt64()
 			continue
+		}
+		float64value, ok := value.(basetypes.Float64Value)
+		if ok {
+			converted[UnderscoresToCamelCase(key)] = float64value.ValueFloat64()
+			continue
+		}
+		setvalue, ok := value.(basetypes.SetValue)
+		if ok {
+			converted[UnderscoresToCamelCase(key)] = ConvertToPrimitive(setvalue)
 		}
 	}
 
@@ -270,6 +301,15 @@ func StringValueOrNull(value interface{}) types.String {
 	} else {
 		return types.StringValue(value.(string))
 	}
+}
+
+func InterfaceFloatSetValue(values []interface{}) []float64 {
+	newFloat := make([]float64, 0, len(values))
+	for _, v := range newFloat {
+		newFloat = append(newFloat, float64(v))
+	}
+
+	return newFloat
 }
 
 func CreateKeysFromAttrValues(attrValues map[string]attr.Value) []string {

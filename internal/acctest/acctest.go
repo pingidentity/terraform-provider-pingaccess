@@ -75,6 +75,40 @@ func StringSliceToTerraformString(values []string) string {
 	return builder.String()
 }
 
+// Convert a float64 slice to the format used in Terraform files
+func FloatSliceToTerraformString(values []float64) string {
+	var builder strings.Builder
+	builder.WriteString("[")
+	string := ""
+	for _, v := range values {
+		if len(string) > 0 {
+			string += ","
+		}
+		string += fmt.Sprintf("%f", v)
+	}
+	builder.WriteString(string)
+	builder.WriteString("]")
+	return builder.String()
+}
+
+func FloatSliceToStringSlice(values []float64) []string {
+	stringSlice := make([]string, 0, len(values))
+	for _, v := range values {
+		element := fmt.Sprintf("%f", v)
+		stringSlice = append(stringSlice, element)
+	}
+	return stringSlice
+}
+
+func InterfaceSliceToStringSlice(values []interface{}) []string {
+	stringSlice := make([]string, 0, len(values))
+	for _, v := range values {
+		element := fmt.Sprintf("%s", v)
+		stringSlice = append(stringSlice, element)
+	}
+	return stringSlice
+}
+
 // Utility methods for testing whether attributes match the expected values
 
 // Test if string attributes match
@@ -105,6 +139,14 @@ func TestAttributesMatchBool(resourceType string, resourceName *string, attribut
 	return nil
 }
 
+// Test if float64 attributes match
+func TestAttributesMatchFloat(resourceType string, resourceName *string, attributeName string, expected, found float64) error {
+	if expected != found {
+		return mismatchedAttributeError(resourceType, resourceName, attributeName, fmt.Sprintf("%f", expected), fmt.Sprintf("%f", found))
+	}
+	return nil
+}
+
 // Test if int attributes match
 func TestAttributesMatchInt(resourceType string, resourceName *string, attributeName string, expected, found int64) error {
 	if expected != found {
@@ -121,8 +163,16 @@ func TestAttributesMatchStringSlice(resourceType string, resourceName *string, a
 	return nil
 }
 
+// Test if float slice attributes match
+func TestAttributesMatchFloatSlice(resourceType string, resourceName *string, attributeName string, expected, found []float64) error {
+	if !types.FloatSetsEqual(expected, found) {
+		return mismatchedAttributeError(resourceType, resourceName, attributeName, FloatSliceToTerraformString(expected), FloatSliceToTerraformString(found))
+	}
+	return nil
+}
+
 func ExpectedDestroyError(resourceType, resourceName string) error {
-	return fmt.Errorf("%s '%s' still exists after tests. Expected it to be destroyed.", resourceType, resourceName)
+	return fmt.Errorf("%s '%s' still exists after tests. Expected it to be destroyed", resourceType, resourceName)
 }
 
 func mismatchedAttributeError(resourceType string, resourceName *string, attributeName, expected, found string) error {
