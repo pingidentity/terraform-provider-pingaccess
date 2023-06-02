@@ -19,6 +19,7 @@ import (
 	engineListener "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/enginelisteners"
 	highAvailabilityProfiles "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/highavailabilityprofiles"
 	hsmProvider "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/hsmproviders"
+	proxies "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/proxies"
 	sites "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/sites"
 	thirdPartyService "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/thirdpartyservices"
 	trustedCertificateGroup "github.com/pingidentity/terraform-provider-pingaccess/internal/resource/trustedcertificategroups"
@@ -195,6 +196,7 @@ func (p *pingaccessProvider) Resources(_ context.Context) []func() resource.Reso
 		engineListener.EngineListenerResource,
 		highAvailabilityProfiles.AvailabilityProfileResource,
 		hsmProvider.HsmProviderResource,
+		proxies.HttpClientProxyResource,
 		sites.SiteResource,
 		thirdPartyService.ThirdPartyServiceResource,
 		trustedCertificateGroup.TrustedCertificateGroupResource,
