@@ -25,7 +25,9 @@ func StringToInt64Pointer(value basetypes.StringValue) *int64 {
 func Int64PointerToString(value int64) string {
 	return strconv.FormatInt(value, 10)
 }
-
+func BaseTypesInt64ToString(value basetypes.Int64Value) string {
+	return strconv.FormatInt(value.ValueInt64(), 10)
+}
 func Int64ToString(value types.Int64) string {
 	return strconv.FormatInt(value.ValueInt64(), 10)
 }
@@ -195,7 +197,7 @@ func InterfaceStringPointerValue(i interface{}) *string {
 }
 
 // Get a types.Int64 from the given int32 pointer, handling if the pointer is nil
-func Int64TypeOrNil(i *int32) types.Int64 {
+func Int64TypeOrNil(i *int64) types.Int64 {
 	if i == nil {
 		return types.Int64Null()
 	}
