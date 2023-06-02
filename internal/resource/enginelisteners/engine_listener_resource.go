@@ -57,6 +57,7 @@ func enginelistenerResourceSchema(ctx context.Context, req resource.SchemaReques
 				Optional: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
+					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"name": schema.StringAttribute{
