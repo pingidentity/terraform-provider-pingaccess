@@ -60,6 +60,7 @@ func proxieResourceSchema(ctx context.Context, req resource.SchemaRequest, resp 
 				Computed: true,
 				Optional: true,
 				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},

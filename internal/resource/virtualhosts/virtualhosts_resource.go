@@ -57,6 +57,7 @@ func virtualhostResourceSchema(ctx context.Context, req resource.SchemaRequest, 
 				Optional: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
+					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"agent_resource_cache_ttl": schema.Int64Attribute{

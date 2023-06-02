@@ -54,6 +54,7 @@ func acmeserversResourceSchema(ctx context.Context, req resource.SchemaRequest, 
 				Optional: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
+					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"name": schema.StringAttribute{
